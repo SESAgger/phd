@@ -11,8 +11,7 @@
     .env<-new.env()
 
 #Loading necessary packages
-    .env$packages <- c("qqman","dplyr","stringr","tidyr","ggplot2","gdata","forcats","biomaRt","utils","readr","readr","ggrepel","RColorBrewer")
-
+    .env$packages <- c("qqman","tidyverse","gdata","biomaRt","utils","ggrepel","RColorBrewer","data.table")
 
     .env$libraries<-function(){
     sapply(.env$packages,require,character=TRUE)
@@ -312,7 +311,7 @@
         # Add highlight and annotation information
         # mutate( is_highlight=ifelse(SNP %in% hlight, "yes", "no")) %>%
         mutate( is_annotate=ifelse(Z_FST > threshold, "yes", "no")) %>%
-        mutate( is_annotate1=ifelse(Z_FST > 5, "yes", "no"))
+        mutate( is_annotate1=ifelse(Z_FST > 5.5, "yes", "no"))
 
         # get chromosome center positions for x-axis
         axisdf <- df.tmp %>% group_by(CHR) %>% summarize( #Add POS here if you want to look single CHR
@@ -332,12 +331,13 @@
         labs(x = "Chromosome",y=expression(ZF["ST"])) +
 
         # add genome-wide sig and sugg lines
-        geom_hline(yintercept = 5.5,color="orange")+
         geom_hline(yintercept = 5,color="orange",linetype="dashed")+
+        geom_hline(yintercept = 5.5,color="orange")+
 
         # Add highlighted points
-        geom_point(data=subset(df.tmp, is_annotate1=="yes"), color="orange", size=2) +
-        geom_point(data=subset(df.tmp, is_annotate=="yes"), color="orangered", size=2) +
+        geom_point(data=subset(df.tmp, is_annotate=="yes"), color="orange", size=2) +
+        geom_point(data=subset(df.tmp, is_annotate1=="yes"), color="orangered", size=2) +
+
 
         # Add label using ggrepel to avoid overlapping, I usally don't use the labels so I've just commented it out
         #geom_label_repel(data=df.tmp[df.tmp$is_annotate=="yes",], aes(label=as.factor(SNP), alpha=0.7), size=5, force=1.3) +
