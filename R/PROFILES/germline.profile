@@ -11,7 +11,7 @@
     .env<-new.env()
 
 #Loading necessary packages
-    .env$packages <- c("qqman","tidyverse","gdata","biomaRt","utils","ggrepel","RColorBrewer","data.table")
+    .env$packages <- c("qqman","tidyverse","gdata","biomaRt","utils","data.table","ggrepel","RColorBrewer","data.table")
 
     .env$libraries<-function(){
     sapply(.env$packages,require,character=TRUE)
@@ -336,7 +336,7 @@
 
         # Add highlighted points
         geom_point(data=subset(df.tmp, is_annotate=="yes"), color="orange", size=2) +
-        geom_point(data=subset(df.tmp, is_annotate1=="yes"), color="orangered", size=2) +
+        #geom_point(data=subset(df.tmp, is_annotate1=="yes"), color="orangered", size=2) +
 
 
         # Add label using ggrepel to avoid overlapping, I usally don't use the labels so I've just commented it out
