@@ -26,16 +26,16 @@
         if(missing(separator)){
             separator="\t"
         }
-        write.table(df,file=filnavn,sep=separator, quote=FALSE,row.names=FALSE)
+        fwrite(df, file = filnavn, append = FALSE, quote = "auto", sep = separator,row.names = FALSE,)
     }
 
     .env$hentfil<-function(filnavn,varnavn,separator){
         if(missing(separator)){
-                   separator=""
+                   separator="\t"
             }
-        data<-read.table(filnavn,header=TRUE,sep=separator,comment="")
+        data<-fread(filnavn,header=TRUE,stringsAsFactors=TRUE,sep=separator)
         assign(paste(deparse(substitute(varnavn))),data,envir=.GlobalEnv)
-    }
+        }
 
 
 #Data handling stuff
