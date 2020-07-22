@@ -32,6 +32,8 @@ nextflow -log runallagain.log run /proj/uppstore2017228/KLT.05.GRUS/sophieflatr/
 
 ## Make files
 
+Jge kaf ifjk stave
+
 ### Annotate files
 
 ```bash
@@ -142,7 +144,7 @@ hp_calc<-function (df,bin_size,bin_step)
 
 
 
-### Calculate $\mathrm{F_{ST}}$
+### Calculate $\mathrm{F_{ST}}$ 
 
 #### Windowed
 
@@ -164,92 +166,78 @@ vcftools \
 
 ##### Databehandling
 
-``` R
-Weighted_FST is used, unless otherwise specified.
+$Weighted-F_{ST}$ is used, unless otherwise specified.
+
+Fejltjek:
+
+```R 
+str(df)
+summary(df)
+#new_df <- something(df)
+dim(newdf)==dim(df)
+# Summarize
+  df %>% dplyr::select(-Feature) %>% subset(filter options) %>% distinct(Location,.keep_all=TRUE) #Check length=length(count(Location)) - to see if any locations have been dropped
+MAF=ifelse(as.character(fcr_e_g5$Allele)==as.character(fcr_e_g5$A1),fcr_e_g5$MAF_A,1-fcr_e_g5$MAF_A)#To take into accountt thatt plink somettimes switches the min og maj
+a<-c("CHR","SNP","Gene","Location","POS","NMISS","FST","Z_FST","#Uploaded_variation","Allele","Consequence","Amino_acids","Codons","Extra","external_gene_name","A1","MAF_A","MAF_U","r_MAF_A")#Relevante kolonner
 ```
+
+```R
+#Make tables:
+df %>% dplyr::select(-Feature) %>% subset(filter options) %>% distinct(Location,.keep_all=TRUE)%>% dplyr::select(Consequence ,external_gene_name,Gene,Location,FST , Z_FST,MAF_A,MAF_U,Codons,Extra,NCHROBS_A,NCHROBS_U)
+
+dplyr::select(Consequence ,external_gene_name,Gene,Location,A1,A2,NCHROBS_A,FST , Z_FST,MAF_A,Codons,Extra)
+```
+
+
 
 ##### Figures
 
 ```R
-gg.manhattan
-function(df1 , threshold, hlight, col, ylims, title){
-    #https://github.com/pcgoddard/Burchardlab_Tutorials/wiki/
-    #GGplot2-Manhattan-Plot-Function fixed for FST
-    #Needed packages
-        # library(readr)
-        # library(ggrepel)
-        # library(ggplot2)
-        # library(dplyr)
-        # library(RColorBrewer)
-      # format df
-      df<- subset(df1,{Z_FST,Z_wFST}>0)
-      df.tmp <- df %>%
-        
-        # Compute chromosome size
-        group_by(CHR) %>% 
-        summarise(chr_len=max(POS)) %>%
-        
-        # Calculate cumulative position of each chromosome
-        mutate(tot=cumsum(as.numeric(chr_len))-chr_len) %>%
-        dplyr::select(-chr_len) %>%
-        
-        # Add this info to the initial dataset
-        left_join(df, ., by=c("CHR"="CHR")) %>%
-        
-        # Add a cumulative position of each SNP
-        arrange(CHR, POS) %>%
-        mutate( BPcum=POS+tot) %>%
-        
-        # Add highlight and annotation information
-        # mutate( is_highlight=ifelse(SNP %in% hlight, "yes", "no")) %>%
-        mutate( is_annotate=ifelse({Z_FST,Z_wFST} > threshold, "yes", "no"))
-      
-      # get chromosome center positions for x-axis
-      axisdf <- df.tmp %>% group_by(CHR) %>% summarize( #Add POS here if you want to look single CHR
-        center=( max(BPcum) + min(BPcum) ) / 2 )
-      
-      ggplot(df.tmp, aes(x=BPcum, y={Z_FST,Z_wFST})) +
-        # Show all points
-        geom_point(aes(color=as.factor(CHR)), alpha=0.8, size=2) +
-        scale_color_manual(values = rep(col, 22 )) +
-
-        # custom X axis: 
-        scale_x_continuous( label = axisdf$CHR, breaks= axisdf$center ) + #Remove for single CHR (i think)
-        scale_y_continuous(expand = c(0, 0), limits = ylims) +  #expand=c(0,0) #removes space between plot area and x axis 
-        
-        # add plot and axis titles
-        ggtitle(paste0(title)) +
-        labs(x = "Chromosome") +#CHange to "Position" if looking at single CHR
-        
-        # add genome-wide sig and sugg lines
-        geom_hline(yintercept = 5,color="orange")+
-        geom_hline(yintercept = 4.5,color="orange",linetype="dashed")+
-
-        # Add highlighted points
-        geom_point(data=subset(df.tmp, is_annotate=="yes"), color="orange", size=2) +
-        
-        # Add label using ggrepel to avoid overlapping, I usally don't use the labels so I've just commented it out
-        #geom_label_repel(data=df.tmp[df.tmp$is_annotate=="yes",], aes(label=as.factor(SNP), alpha=0.7), size=5, force=1.3) +
-
-        
-        # Custom the theme:
-        theme_bw(base_size = 22) +
-        theme( 
-          plot.title = element_text(hjust = 0.5),
-          legend.position="none",
-          panel.border = element_blank(),
-          panel.grid.major.x = element_blank(),
-          panel.grid.minor.x = element_blank()
-        )
+gg.manhattan_chr
+function (df1, threshold, hlight, col, ylims, title) 
+{
+    if (is.data.frame(df1) == FALSE) {
+        print("Input must be a data.frame")
     }
-
+    else if (is.data.table(df1) == TRUE) {
+        print("Input must be data.frame, not data.table")
+    }
+    else {
+        if ((missing(threshold))) {
+            threshold <- 5
+        }
+        if ((missing(col))) {
+            col <- c("#5D82BB", "#3B64A5", "#1E4F9E", "#103B7E", 
+                "#082B64")
+        }
+        if ((missing(title))) {
+            title <- "Unknown"
+        }
+        df <- subset(df1, Z_FST > 0)
+        df.tmp <- df %>% group_by(CHR) %>% summarise(chr_len = max(POS)) %>% 
+            mutate(tot = cumsum(as.numeric(chr_len)) - chr_len) %>% 
+            dplyr::select(-chr_len) %>% left_join(df, ., by = c(CHR = "CHR")) %>% 
+            arrange(CHR, POS) %>% mutate(BPcum = POS + tot) %>% 
+            mutate(is_annotate = ifelse(Z_FST > threshold, "yes", 
+                "no")) %>% mutate(is_annotate1 = ifelse(Z_FST > 
+            5.5, "yes", "no"))
+        axisdf <- df.tmp %>% group_by(CHR) %>% summarize(center = (max(BPcum) + 
+            min(BPcum))/2)
+        ggplot(df.tmp, aes(x = BPcum, y = Z_FST)) + geom_point(aes(color = as.factor(CHR)), 
+            alpha = 0.8, size = 2) + scale_color_manual(values = rep(col, 
+            38)) + scale_x_continuous(label = axisdf$CHR, breaks = axisdf$center) + 
+            scale_y_continuous(expand = c(0, 0), limits = ylims) + 
+            ggtitle(paste0(title)) + labs(x = "Chromosome", y = expression(ZF["ST"])) + 
+            geom_hline(yintercept = 5, color = "orange", linetype = "dashed") + 
+            geom_hline(yintercept = 5.5, color = "orange") + 
+            geom_point(data = subset(df.tmp, is_annotate == "yes"), 
+                color = "orange", size = 2) + theme_bw(base_size = 22) + 
+            theme(plot.title = element_text(hjust = 0.5), legend.position = "none", 
+                panel.border = element_blank(), panel.grid.major.x = element_blank(), 
+                panel.grid.minor.x = element_blank())
+    }
+}
 ```
-
-
-
-
-
-
 
 
 

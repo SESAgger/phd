@@ -378,6 +378,10 @@ broom::tidy(lm(y ~ x[,select]))
 
 ## Ridge
 
+I cant splede
+
+
+
 ```R
 library('glmnet')
 res <- glmnet(x,y,alpha=0)#alpha=0 er ridge og alpha=1 er lasso, standard er 1, den er ikke binær
@@ -409,6 +413,7 @@ summary(fit) #Viser os hvor stor en andel af Variansen som en given PCA står fo
 plot(fit) #Viser os et histogram over varians pr. PCA. Giver en god visuel forståelse af predictornes effekt
 biplot(fit) #Viser hvilke componenter som primært påvirker en given PCA. Kan dog lettere læses af daten selv
 fit
+
 ```
 
 ## Genome Wide Association Study
