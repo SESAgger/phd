@@ -44,13 +44,10 @@
             # chooses all cases with non-missing values (should be removed before R, but just in case)
         com_df<-df[complete.cases(df),];
         newdf<-data.frame(com_df)
-        newdf$chr<-'chr'
-        newdf<-unite(newdf, Location, c(chr,CHR, POS), sep=":",remove=FALSE)
-        newdf$Location<-str_replace(newdf$Location,'chr:','chr')
-        newdf$Location<-as.factor(str_replace(newdf$Location,'chrchr','chr'))
-        newdf$chr<-NULL
+        newdf$Location<-as.factor(str_replace(newdf$SNP,'_',':'))
         assign(paste(deparse(substitute(df)),"clean",sep='_'),newdf,envir = .GlobalEnv)
     }
+
     .env$clean_vt <- function(df){
         df<-rename(df,"FST"="WEIR_AND_COCKERHAM_FST")
         df<-subset(df,!is.na(df$FST))
@@ -193,9 +190,8 @@
         print("Input must be a data.frame")
     }
     else if(is.data.table(df1)==TRUE){
-        print("Input must be data.frame, not data.table")
+        print("Input must be data.frame, not data.table, use as.data.frame()")
     }else{
-
         if((missing(threshold))){
             threshold<-5
         }
@@ -231,7 +227,9 @@
 
         # Add highlight and annotation information
         #mutate( is_highlight=ifelse(SNP %in% hlight, "Non-coding transcript variant", "Other")) %>%
-        mutate( is_annotate=ifelse(Z_FST > threshold, "yes", "no"))
+        mutate( is_annotate=ifelse(Z_FST > 5, "yes", "no"))
+        mutate( is_annotate1=ifelse(Z_FST > 5.5, "yes", "no"))
+
 
         # get chromosome center positions for x-axis
         axisdf <- df.tmp %>% group_by(POS,Consequence) %>% summarize( #Add POS here if you want to look single CHR
@@ -251,12 +249,14 @@
         labs(x = "Position",y=expression(ZF["ST"])) +#CHange to "Position" if looking at single CHR
 
         # add genome-wide sig and sugg lines
-        geom_hline(yintercept = 5,color="orange")+
-        geom_hline(yintercept = 4.5,color="orange",linetype="dashed")+
+        geom_hline(yintercept = 5.5,color="orange")+
+        geom_hline(yintercept = 5,color="orange",linetype="dashed")+
 
         # Add highlighted points
-        geom_point(data=subset(df.tmp, is_annotate=="yes"), color="orange", size=2) +
-        geom_point(data=subset(df.tmp, is_highlight=="Non-coding transcript variant"), color="red",size=3) +
+        geom_point(data=subset(df.tmp, is_annotate=="yes"), color="orange", size=1) +
+        geom_point(data=subset(df.tmp, is_annotate1=="yes"), color="orangered", size=2) +
+
+        #geom_point(data=subset(df.tmp, is_highlight=="Non-coding transcript variant"), color="red",size=3) +
 
         # Add label using ggrepel to avoid overlapping, I usally don't use the labels so I've just commented it out
         #geom_label_repel(data=df.tmp[df.tmp$is_annotate=="yes",], aes(label=as.factor(SNP), alpha=0.7), size=5, force=1.3) +
@@ -276,7 +276,7 @@
     }
 }
 
-.env$gg.manhattan_chr <- function(df1 , threshold, hlight, col, ylims, title){
+.env$gg.manhattan_chr <- function(df1, threshold,  ylims, title,hlight,col){
     #https://github.com/pcgoddard/Burchardlab_Tutorials/wiki/
     #GGplot2-Manhattan-Plot-Function fixed for FST
     #Needed packages
@@ -290,7 +290,7 @@
         print("Input must be a data.frame")
     }
     else if(is.data.table(df1)==TRUE){
-        print("Input must be data.frame, not data.table")
+        print("Input must be data.frame, not data.table, use as.data.frame()")
     }else{      
         if((missing(threshold))){
             threshold<-5
@@ -307,7 +307,7 @@
 
         # Compute chromosome size
         group_by(CHR) %>% 
-        summarise(chr_len=max(POS)) %>%
+        dplyr::summarise(chr_len=max(POS)) %>%
 
         # Calculate cumulative position of each chromosome
         mutate(tot=cumsum(as.numeric(chr_len))-chr_len) %>%
@@ -322,7 +322,7 @@
 
         # Add highlight and annotation information
         # mutate( is_highlight=ifelse(SNP %in% hlight, "yes", "no")) %>%
-        mutate( is_annotate=ifelse(Z_FST > threshold, "yes", "no")) %>%
+        mutate( is_annotate=ifelse(Z_FST > 5, "yes", "no")) %>%
         mutate( is_annotate1=ifelse(Z_FST > 5.5, "yes", "no"))
 
         # get chromosome center positions for x-axis
@@ -331,7 +331,7 @@
 
         ggplot(df.tmp, aes(x=BPcum, y=Z_FST)) +
         # Show all points
-        geom_point(aes(color=as.factor(CHR)), alpha=0.8, size=2) +
+        geom_point(aes(color=as.factor(CHR)), alpha=0.8, size=1) +
         scale_color_manual(values = rep(col, 38 )) +
 
         # custom X axis: 
@@ -347,8 +347,8 @@
         geom_hline(yintercept = 5.5,color="orange")+
 
         # Add highlighted points
-        geom_point(data=subset(df.tmp, is_annotate=="yes"), color="orange", size=2) +
-        #geom_point(data=subset(df.tmp, is_annotate1=="yes"), color="orangered", size=2) +
+        geom_point(data=subset(df.tmp, is_annotate=="yes"), color="orange", size=1) +
+        geom_point(data=subset(df.tmp, is_annotate1=="yes"), color="orangered", size=2) +
 
 
         # Add label using ggrepel to avoid overlapping, I usally don't use the labels so I've just commented it out
