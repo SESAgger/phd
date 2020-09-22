@@ -40,11 +40,13 @@
 
 #Data handling stuff
     .env$clean_plink <- function(df){
+        df1<-df
             # Makes new cleaned-up df based on df.
             # chooses all cases with non-missing values (should be removed before R, but just in case)
-        com_df<-df[complete.cases(df),];
+        df1$Z_FST<-scale(df1$FST)
+        com_df<-df1[complete.cases(df1),];
         newdf<-data.frame(com_df)
-        newdf$Location<-as.factor(str_replace(newdf$SNP,'_',':'))
+        newdf$Location<-str_replace(newdf$SNP,"_",":")
         assign(paste(deparse(substitute(df)),"clean",sep='_'),newdf,envir = .GlobalEnv)
     }
 
@@ -108,10 +110,10 @@
 #Summation stuff
     .env$pull_tables<-function(df){
         print("Deleterious mutations")
-        subset(df,grepl("elet",Extra)) %>% dplyr::select("CHR","SNP","Gene","Location","POS","NMISS","FST","Z_FST","#Uploaded_variation","Allele","Consequence","Amino_acids","Codons","Extra","external_gene_name","A1","MAF_A","MAF_U","r_MAF_A") %>% distinct(Location,.keep_all=TRUE) %>% print(n=100)
+        subset(df,grepl("elet",Extra)&r_MAF_A!=0) %>% dplyr::select("CHR","SNP","Gene","Location","POS","NMISS","FST","Z_FST","#Uploaded_variation","Allele","Consequence","Amino_acids","Codons","Extra","external_gene_name","A1","MAF_A","MAF_U","r_MAF_A") %>% distinct(Location,.keep_all=TRUE) %>% print(n=100)
 
         print("Missense mutations")
-        subset(df,grepl("missense",Consequence)) %>% dplyr::select("CHR","SNP","Gene","Location","POS",
+        subset(df,grepl("missense",Consequence)&r_MAF_A!=0) %>% dplyr::select("CHR","SNP","Gene","Location","POS",
             "NMISS","FST","Z_FST","#Uploaded_variation","Allele","Consequence","Amino_acids","Codons","Extra","external_gene_name","A1","MAF_A","MAF_U","r_MAF_A") %>% distinct(Location,.keep_all=TRUE) %>% print(n=100)
 
         print("Highest Z_FST")
@@ -122,7 +124,7 @@
 #Annotation stuff
     .env$annotategenes<-function(df){
         #You need to have the object ann loaded, this should be a VEP annotation file
-        df_ann<-merge(df,ann,all.y=FALSE,by="Location")
+        df_ann<-merge(df,ann,all.x=TRUE,by="Location")
         assign(paste(deparse(substitute(df)),"ann",sep='_'),df_ann,envir = .GlobalEnv)
     }
 
@@ -227,7 +229,7 @@
 
         # Add highlight and annotation information
         #mutate( is_highlight=ifelse(SNP %in% hlight, "Non-coding transcript variant", "Other")) %>%
-        mutate( is_annotate=ifelse(Z_FST > 5, "yes", "no"))
+        mutate( is_annotate=ifelse(Z_FST > 5, "yes", "no")) %>%
         mutate( is_annotate1=ifelse(Z_FST > 5.5, "yes", "no"))
 
 
@@ -237,7 +239,7 @@
 
         ggplot(df.tmp, aes(x=BPcum, y=Z_FST)) +
         # Show all points
-        geom_point(aes(color=as.factor(is_highlight)),  size=1) +
+        geom_point(aes(color=as.factor(CHR)),  size=1) +
         scale_color_manual(values = c("#5D82BB","red"),name="Consequence") +
 
         # custom X axis: 
@@ -245,7 +247,7 @@
         scale_y_continuous(expand = c(0, 0), limits = ylims) +  #expand=c(0,0) #removes space between plot area and x axis 
 
         # add plot and axis titles
-        ggtitle(paste0(title)) +
+        ggtitle(title) +
         labs(x = "Position",y=expression(ZF["ST"])) +#CHange to "Position" if looking at single CHR
 
         # add genome-wide sig and sugg lines
@@ -339,7 +341,7 @@
         scale_y_continuous(expand = c(0, 0), limits = ylims) +  #expand=c(0,0)removes space between plot area and x axis 
 
         # add plot and axis titles
-        ggtitle(paste0(title)) +
+        ggtitle(title) +
         labs(x = "Chromosome",y=expression(ZF["ST"])) +
 
         # add genome-wide sig and sugg lines
@@ -383,7 +385,7 @@
 
     scale_x_discrete(expand=c(0,0))+
     scale_y_discrete(expand=c(0,0))+
-    ggtitle(paste0(title)) +
+    ggtitle(title) +
 
    
     # Custom theme:

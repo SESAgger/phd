@@ -1,0 +1,151 @@
+[123145455689728] : done 'SELECT cs.td_date,                  cs.td_usrid,                cs.td_typeid,                   cs.td_state,                cs.td_text,                 cs.td_responsible_userid,                   cs.td_deleted,                  ca.td_cliid,                    t.tim_patientid,                cs.td_signed_userid,                cs.td_marked_wrong_userid,                  cs.td_marked_wrong_date         FROM tbl_cst cs         LEFT JOIN tbl_timeline t ON t.id = cs.td_timelineid         LEFT JOIN tbl_case ca ON ca.id = t.tim_caseid           WHERE cs.id = :id' 
+|Name|Result|Unit|Minimum|Maximum|TexttvLinesVNCJournalTextForm
+visibility/fE5hbWV8UmVzdWx0fFVuaXR8TWluaW11bXxNYXhpbXVtfFRleHR0dkxpbmVzVk5DSm91cm5hbFRleHRGb3Jt
+SlidestvSlidesVNCJournalTextForm
+visibility/U2xpZGVzdHZTbGlkZXNWTkNKb3VybmFsVGV4dEZvcm0=
+Body PartstvBodyPartsVNCJournalTextForm
+visibility/Qm9keSBQYXJ0c3R2Qm9keVBhcnRzVk5DSm91cm5hbFRleHRGb3Jt
+NametvEmptyLinesVNCJournalTextForm
+visibility/TmFtZXR2RW1wdHlMaW5lc1ZOQ0pvdXJuYWxUZXh0Rm9ybQ==
+|Name|Result|Unit|Minimum|Maximum|TexttvLinesVNCJournalTextForm
+visibility/fE5hbWV8UmVzdWx0fFVuaXR8TWluaW11bXxNYXhpbXVtfFRleHR0dkxpbmVzVk5DSm91cm5hbFRleHRGb3Jt
+SlidestvSlidesVNCJournalTextForm
+visibility/U2xpZGVzdHZTbGlkZXNWTkNKb3VybmFsVGV4dEZvcm0=
+Body PartstvBodyPartsVNCJournalTextForm
+visibility/Qm9keSBQYXJ0c3R2Qm9keVBhcnRzVk5DSm91cm5hbFRleHRGb3Jt
+NametvEmptyLinesVNCJournalTextForm
+visibility/TmFtZXR2RW1wdHlMaW5lc1ZOQ0pvdXJuYWxUZXh0Rm9ybQ==
+[123145455689728] : closing database CNM0x700009246000 
+QSqlDatabasePrivate::removeDatabase: connection 'CNM0x700009246000' is still in use, all queries will cease to work.
+[123145456226304] : opening database {d0843a2e-0ffc-412c-b56f-1068a31865d3} 
+[123145456226304] : opening database {d0843a2e-0ffc-412c-b56f-1068a31865d3} 
+[123145456226304] : opening database {d0843a2e-0ffc-412c-b56f-1068a31865d3} 
+[123145456226304] : opening database {d0843a2e-0f
+
+fc-412c-b56f-1068a31865d3} 
+
+
+
+QSqlDatabasePrivate::addDatabase: duplicate connection name 'SysDB', old connection removed.
+Unable to free statement: connection pointer is NULL
+
+[123145464999936] : closing database CNM0x700009b27000 
+QSqlDatabasePrivate::removeDatabase: connection 'CNM0x700009b27000' is still in use, all queries will cease to work.
+
+
+
+
+libpng warning: iCCP: profile 'Photoshop ICC profile': 0h: PCS illuminant is not D50
+dyld: Library not loaded: @rpath/QtGui.framework/Versions/5/QtGui
+  Referenced from: /Applications/VetNetManagement.app/Contents/Frameworks/QtWebEngineCore.framework/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess
+  Reason: image not found
+
+[Process completed]
+
+
+QObject::connect: No such signal CDCardTerminal::replyReady( CDCardReply )
+QObject::connect: No such slot VMAVetNetManagement::showProgramNews()
+QObject::connect: No such signal VMAVetNetManagement::connectedToServer()
+QObject::connect: No such signal VMAVetNetManagement::print(QString, QVariant, TDWhereList, QString, int)
+QObject::connect: No such signal VMAVetNetManagement::sendMessage(QByteArray *)
+libpng warning: iCCP: profile 'icc': 0h: PCS illuminant is not D50
+Property|ValuetpcListTDListDialog
+visibility/UHJvcGVydHl8VmFsdWV0cGNMaXN0VERMaXN0RGlhbG9n
+DatabasestpcListTDListDialog
+visibility/RGF0YWJhc2VzdHBjTGlzdFRETGlzdERpYWxvZw==
+DatabasestpcListTDListDialog
+visibility/RGF0YWJhc2VzdHBjTGlzdFRETGlzdERpYWxvZw==
+Object released!!!!
+
+[Process completed]
+
+
+dyld: Library not loaded: @rpath/QtGui.framework/Versions/5/QtGui
+  Referenced from: /Applications/VetNetManagement.app/Contents/Frameworks/QtWebEngineCore.framework/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess
+  Reason: image not found
+
+
+
+
+
+  [123145406443520] : opening database {6a0a39b7-c3ce-4498-87e6-6753fe58b336} 
+[QxOrm] sql query (total: 10 ms, db: 5 ms) : SELECT tbl_userfavorites.id AS tbl_userfavorites_id_0, tbl_userfavorites.ufa_cprelid AS tbl_userfavorites_ufa_cprelid_0 FROM tbl_userfavorites WHERE tbl_userfavorites.ufa_userid = :tbl_userfavorites_ufa_userid_1_0 ORDER BY tbl_userfavorites.ufa_timestamp DESC LIMIT :limit_rows_count_3_0 OFFSET :offset_start_row_3_0
+[123145406443520] : opening database {6a0a39b7-c3ce-4498-87e6-6753fe58b336} 
+QSqlDatabasePrivate::addDatabase: duplicate connection name 'SysDB', old connection removed.
+[123145406443520] : opening database {6a0a39b7-c3ce-4498-87e6-6753fe58b336} 
+Unable to free statement: connection pointer is NULL
+
+
+
+[123145406443520] : opening database {6a0a39b7-c3ce-4498-87e6-6753fe58b336} 
+[123145406443520] : opening database {6a0a39b7-c3ce-4498-87e6-6753fe58b336} 
+[123145408589824] : closing database CNM0x70000655b000 
+QSqlDatabasePrivate::removeDatabase: connection 'CNM0x70000655b000' is still in use, all queries will cease to work.
+
+#Mocca
+[123145414164480] : closing database CNM0x700006aac000 
+QSqlDatabasePrivate::removeDatabase: connection 'CNM0x700006aac000' is still in use, all queries will cease to work.
+[123145412554752] : opening database {c4f7e881-1afc-42a4-ae65-2b9dd38d2208} 
+[123145412554752] : opening database {c4f7e881-1afc-42a4-ae65-2b9dd38d2208}
+
+
+#Perla
+QSqlDatabasePrivate::removeDatabase: connection 'CNM0x70000bb7d000' is still in use, all queries will cease to work.
+[123145497833472] : opening database {028a458b-d692-4f1f-911e-19900af16912} 
+[123145497833472] : opening database {028a458b-d692-4f1f-911e-19900af16912} 
+
+
+[123145372094464] : opening database {3ca2f872-f16a-4b91-b098-1cc35eed5359} 
+[123145371557888] : closing database CNM0x70000420a000 
+QSqlDatabasePrivate::removeDatabase: connection 'CNM0x70000420a000' is still in use, all queries will cease to work.
+[123145372094464] : opening database {3ca2f872-f16a-4b91-b098-1cc35eed5359}
+
+
+
+#Hvis jeg kan se at den ikke lukker ordentligt og prøver at gå ud:
+[QxOrm] sql query (total: 9 ms, db: 5 ms) : SELECT tbl_userfavorites.id AS tbl_userfavorites_id_0, tbl_userfavorites.ufa_cprelid AS tbl_userfavorites_ufa_cprelid_0 FROM tbl_userfavorites WHERE tbl_userfavorites.ufa_userid = :tbl_userfavorites_ufa_userid_1_0 ORDER BY tbl_userfavorites.ufa_timestamp DESC LIMIT :limit_rows_count_3_0 OFFSET :offset_start_row_3_0
+Dep|Journal|Account|Firstname|Lastname|Adresse|Postal|City|Patient|Race|Born|Last|twListVNCClientPatientSearch
+visibility/RGVwfEpvdXJuYWx8QWNjb3VudHxGaXJzdG5hbWV8TGFzdG5hbWV8QWRyZXNzZXxQb3N0YWx8Q2l0eXxQYXRpZW50fFJhY2V8Qm9ybnxMYXN0fHR3TGlzdFZOQ0NsaWVudFBhdGllbnRTZWFyY2g=
+WARNING:  you don't own a lock of type ShareLock
+false
+WARNING:  you don't own a lock of type ExclusiveLock
+false
+
+
++++++++++++++++++++++++++++ SETTINGS SKIPPED +++++++++++++++++++++++++++
+[123145311113216] : done 'SELECT l.id,td_order_time,td_test_id,p.td_name,l.td_status FROM tbl_laboraty l LEFT JOIN tbl_user u ON u.id = td_vetid LEFT JOIN tbl_patient p ON p.id = l.td_patid WHERE  td_deleted = 0 and td_vetid = 3466 AND td_vet_time IS NULL AND td_exec_time IS NULL  ORDER BY td_order_time DESC LIMIT 1000' 
+[123145311113216] : id=6, 0 
++++++++++++++++++++++++++++ SETTINGS SKIPPED +++++++++++++++++++++++++++
+[123145311113216] : done 'SELECT l.id,td_order_time,td_test_id,p.td_name FROM tbl_laboraty l LEFT JOIN tbl_user u ON u.id = td_vetid LEFT JOIN tbl_patient p ON p.id = l.td_patid WHERE  td_deleted = 0 and td_vetid = 3466 AND td_vet_time IS NULL AND td_exec_time IS NOT NULL  ORDER BY td_order_time DESC LIMIT 1000' 
+[123145310040064] : opening database {276560e6-4a43-4c7b-bdaa-a34e8c71c768} 
+[123145310040064] : opening database {276560e6-4a43-4c7b-bdaa-a34e8c71c768} 
+[123145311113216] : closing database CNM0x700000865000 
+QSqlDatabasePrivate::removeDatabase: connection 'CNM0x700000865000' is still in use, all queries will cease to work.
+
+
+
+
+
+[QxOrm] qx::QxSqlDatabase : create new database connection in thread '0x10c120dc0' with key 'qt_sql_default_connection'
+[QxOrm] qx::QxSqlDatabase : create new database connection in thread '0x700003b53000' with key '{836acd9f-6b10-4df9-abec-58ccd45a7ca2}'
+[QxOrm] custom sql query (41 ms) : SELECT area_code,id FROM horse_area WHERE area_code IN ('1','2','3')
+QSqlDatabasePrivate::database: requested database does not belong to the calling thread.
+
+libpng warning: iCCP: profile 'Photoshop ICC profile': 0h: PCS illuminant is not D50
+dyld: Library not loaded: @rpath/QtGui.framework/Versions/5/QtGui
+  Referenced from: /Applications/VetNetManagement.app/Contents/Frameworks/QtWebEngineCore.framework/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess
+  Reason: image not found
+Sep  3 10:00:58  VetNetManagement[2351] <Error>: write failed: Broken pipe
+Sep  3 10:00:58  VetNetManagement[2351] <Error>: SeatbeltExecClient: write buffer length failed.
+Sep  3 10:00:58  VetNetManagement[2351] <Error>: SeatbeltExecClient: Writing the serialized profile failed.
+
+
+
+dyld: Library not loaded: @rpath/QtGui.framework/Versions/5/QtGui
+  Referenced from: /Applications/VetNetManagement.app/Contents/Frameworks/QtWebEngineCore.framework/Helpers/QtWebEngineProcess.app/Contents/MacOS/QtWebEngineProcess
+  Reason: image not found
+[123145553420288] : closing database CNM0x70000ef7a000 
+QSqlDatabasePrivate::removeDatabase: connection 'CNM0x70000ef7a000' is still in use, all queries will cease to work.
+
+
+

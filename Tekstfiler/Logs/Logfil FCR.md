@@ -32,7 +32,7 @@ nextflow -log runallagain.log run /proj/uppstore2017228/KLT.05.GRUS/sophieflatr/
 
 ## Make files
 
-Jge kaf ifjk stave
+
 
 ### Annotate files
 
