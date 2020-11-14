@@ -110,14 +110,14 @@
 #Summation stuff
     .env$pull_tables<-function(df){
         print("Deleterious mutations")
-        subset(df,grepl("elet",Extra)&r_MAF_A!=0) %>% dplyr::select("CHR","SNP","Gene","Location","POS","NMISS","FST","Z_FST","#Uploaded_variation","Allele","Consequence","Amino_acids","Codons","Extra","external_gene_name","A1","MAF_A","MAF_U","r_MAF_A") %>% distinct(Location,.keep_all=TRUE) %>% print(n=100)
+        subset(df,grepl("elet",Extra)&FCR!=0) %>% dplyr::select("CHR","SNP","Gene","Location","POS","NMISS","FST","Z_FST","#Uploaded_variation","Allele","Consequence","Amino_acids","Codons","Extra","external_gene_name","A1","FCR","Eriks") %>% distinct(Location,Gene,.keep_all=TRUE) %>% print(n=100)
 
         print("Missense mutations")
-        subset(df,grepl("missense",Consequence)&r_MAF_A!=0) %>% dplyr::select("CHR","SNP","Gene","Location","POS",
-            "NMISS","FST","Z_FST","#Uploaded_variation","Allele","Consequence","Amino_acids","Codons","Extra","external_gene_name","A1","MAF_A","MAF_U","r_MAF_A") %>% distinct(Location,.keep_all=TRUE) %>% print(n=100)
+        subset(df,grepl("missense",Consequence)&FCR!=0) %>% dplyr::select("CHR","SNP","Gene","Location","POS",
+            "NMISS","FST","Z_FST","#Uploaded_variation","Allele","Consequence","Amino_acids","Codons","Extra","external_gene_name","A1","FCR","Eriks") %>% distinct(Location,Gene,.keep_all=TRUE) %>% print(n=100)
 
         print("Highest Z_FST")
-        df %>% arrange(desc(Z_FST)) %>% dplyr::select("CHR","SNP","Gene","Location","POS","NMISS","FST","Z_FST","#Uploaded_variation","Allele","Consequence","Amino_acids","Codons","Extra","external_gene_name","A1","MAF_A","MAF_U","r_MAF_A")  %>% distinct(Location,.keep_all=TRUE)%>% head(n=10)
+        df %>% arrange(desc(Z_FST)) %>% dplyr::select("CHR","SNP","Gene","Location","POS","NMISS","FST","Z_FST","#Uploaded_variation","Allele","Consequence","Amino_acids","Codons","Extra","external_gene_name","A1","FCR","Eriks")  %>% distinct(Location,Gene,.keep_all=TRUE)%>% head(n=10)
 
     }
 
