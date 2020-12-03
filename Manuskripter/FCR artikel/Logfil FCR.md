@@ -319,3 +319,26 @@ fcr_frq_clean_ann_genes$Control<-ifelse(fcr_frq_clean_ann_genes$compare=="same",
 ## Ostranders
 
 Dogs that in file that could be found under bioproject, was included 
+
+
+
+
+
+## Making gene lists 	
+
+Download Cosmic Gene Census and top 100 mutations from TCGA
+
+```R
+test<-merge(cosmic,tcga,by.x="Gene_Symbol",by.y="Symbol",all=TRUE)
+test$percent<-str_split_fixed(test$SSM_Affected_Cases_in_Cohort,"[(]",2)[,2]
+test$percent<-str_replace(test$percent,"[%]","")
+test$percent<-str_replace(test$percent,"[)]","")
+#Germline list
+test%>% subset(Germline=="yes") %>% arrange(desc(percent)) %>% head(n=20)
+#Somatic list
+test%>% subset(Somatic=="yes") %>% arrange(desc(percent)) %>% head(n=20)
+#*MML list
+subset(cosmic,grepl("CMML",TT_germ)|grepl("CMML",TT_som)|grepl("JMML",TT_germ)|grepl("JMML",TT_som)) 
+
+```
+

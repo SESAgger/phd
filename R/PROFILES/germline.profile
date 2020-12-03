@@ -11,7 +11,7 @@
     .env<-new.env()
 
 #Loading necessary packages
-    .env$packages <- c("qqman","tidyverse","gdata","biomaRt","utils","data.table","ggrepel","RColorBrewer","data.table")
+    .env$packages <- c("qqman","tidyverse","gdata","biomaRt","utils","data.table","ggrepel","RColorBrewer")
 
     .env$libraries<-function(){
     sapply(.env$packages,require,character=TRUE)
@@ -130,7 +130,7 @@
 
     .env$relevant<-function(df,fst){
         #Subsetting FST to the given level.
-        newdf<-subset(df,FST>=fst)
+        newdf<-subset(df,Z_FST>=fst)
         assign(paste(deparse(substitute(df)),deparse(substitute(fst)),"fst",sep='_'),newdf,envir = .GlobalEnv)
     }
 
@@ -138,7 +138,9 @@
         ensembl<-useMart("ENSEMBL_MART_ENSEMBL",dataset="clfamiliaris_gene_ensembl")
         df1<-subset(df,Gene!="-")
         df2<-df1 %>% count(Gene)
+        print("annotation starting")
         genes<-getBM(c('ensembl_gene_id','external_gene_name','start_position','end_position'),filter='ensembl_gene_id',values=df2$Gene,mart=ensembl)
+        print("Start merging")
         newdf<-merge(df,genes,by.x="Gene", by.y="ensembl_gene_id",all.x=TRUE)
         newdf$external_gene_name<-as.factor(newdf$external_gene_name)
         assign(paste(deparse(substitute(df)),"genes",sep='_'),newdf,envir = .GlobalEnv)
