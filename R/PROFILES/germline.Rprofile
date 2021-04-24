@@ -66,47 +66,48 @@
 
 
 #Statistics stuff
-    .env$hp_calc<-function (df,bin_size,bin_step){
-        #Calculates pooled heterogozity, it's slow, but it's also doing a lot of stuff.
-        df3<-c()
-        j<-1
-         print("Binning starting. Does the df have $Location?")
-        while (j<39){
-            a<-subset(df,CHR==j)
-            if(dim(a)[1]!=0){
-                i<-0
-                while (i < max(a$Location)){
-                    bin_start<-i+1
-                    bin_end<-i+bin_size
-                    b<-subset(a,a$Location>=bin_start&a$Location<=bin_end)
-                    C1_sum<-sum(b$C1,na.rm=TRUE)
-                    C2_sum<-sum(b$C2,na.rm=TRUE)
-                    G0_sum<-sum(b$G0,na.rm=TRUE)
-                    hp_1<-2*C1_sum*C2_sum/(C1_sum+C2_sum)^2
-                    if(C1_sum!=0|C2_sum!=0|G0_sum!=0){
-                        df2<-cbind(j,bin_start,bin_end,C1_sum,C2_sum,G0_sum,hp_1)
-                        df3<-bind_rows(df3,as.data.frame(df2))
-                    }   
-                    i<-i+bin_step
+    .env$hp_calc<-function (df, bin_size, bin_step) 
+{
+    df3 <- c()
+    j <- 1
+    print("Binning starting, Do you have $C1,$C2 and $G0? Should be done on plink.frq.counts files")
+    while (j < 39) {
+        a <- subset(df, CHR == j)
+        if (dim(a)[1] != 0) {
+            i <- 0
+            while (i < max(a$POS)) {
+                bin_start <- i + 1
+                bin_end <- i + bin_size
+                b <- subset(a, a$POS >= bin_start & a$POS <= bin_end)
+                C1_sum <- sum(b$C1, na.rm = TRUE)
+                print(C1_sum)
+                C2_sum <- sum(b$C2, na.rm = TRUE)
+                G0_sum <- sum(b$G0, na.rm = TRUE)
+                hp_1 <- 2 * C1_sum * C2_sum/(C1_sum + C2_sum)^2
+                if (C1_sum != 0 | C2_sum != 0 | G0_sum != 0) {
+                  df2 <- cbind(j, bin_start, bin_end, C1_sum, 
+                    C2_sum, G0_sum, hp_1)
+                  df3 <- bind_rows(df3, as.data.frame(df2))
                 }
+                i <- i + bin_step
+                print("Finished",j,bin_start,bin_end)
             }
-            print(paste0("chr ",j," done"))
-            j<-j+1
         }
-
-        print("Summing beginning")
-        df3$hp<-2*df3$C1_sum*df3$C2_sum/(df3$C1_sum+df3$C2_sum)^2
-
-        print("Z-transforming beginning")
-        df3$Z_hp<-scale(df3$hp_1,center=TRUE,scale=TRUE)
-
-        print("Naming beginning")
-        binsi<-bin_size/1000
-        binst<-bin_step/1000
-        assign(paste(deparse(substitute(df)),"w",paste(deparse(substitute(binsi))),"s",paste(deparse(substitute(binst))),"summed", sep = "_"),
-          df3, envir = .GlobalEnv)
-        summary(df3)
+        print(paste0("chr ", j, " done"))
+        j <- j + 1
     }
+    print("Summing beginning")
+    df3$hp <- 2 * df3$C1_sum * df3$C2_sum/(df3$C1_sum + df3$C2_sum)^2
+    print("Z-transforming beginning")
+    df3$Z_hp <- scale(df3$hp_1, center = TRUE, scale = TRUE)
+    print("Naming beginning")
+    binsi <- bin_size/1000
+    binst <- bin_step/1000
+    assign(paste(deparse(substitute(df)), "w", paste(deparse(substitute(binsi))), 
+        "s", paste(deparse(substitute(binst))), "summed", sep = "_"), 
+        df3, envir = .GlobalEnv)
+    summary(df3)
+}
 #Summation stuff
     .env$pull_tables<-function(df){
         print("Deleterious mutations")
