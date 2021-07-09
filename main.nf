@@ -3002,7 +3002,7 @@ process CNVkit {
         set idPatient, idSampleNormal, idSampleTumor, file("${idSampleTumor}*") into cnvkitOut
 
     when: 'cnvkit' in tools 
-    log.info "[nf-core/sarek] Is run with --drop-low-coverage "
+    //log.info "[nf-core/sarek] Is run with --drop-low-coverage "
 
     script:
     """
