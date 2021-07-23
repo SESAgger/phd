@@ -1,9 +1,9 @@
 #!/bin/bash -l
 # NOTE the -l flag!
 
-#SBATCH -J J_makevcfforcnvkitFIL1
-#SBATCH -o O_makevcfforcnvkitFIL1
-#SBATCH -e E_makevcfforcnvkitFIL1
+#SBATCH -J J_makevcfforcnvkit_SAMPLE
+#SBATCH -o O_makevcfforcnvkit_SAMPLE
+#SBATCH -e E_makevcfforcnvkit_SAMPLE
 #SBATCH -t 0:15:00
 #SBATCH -A snic2017-7-384
 #SBATCH -p devcore -n 1
@@ -12,7 +12,7 @@
 #SBATCH --mail-type=ALL
  
 module load bioinfo-tools GATK/4.1.4.1 samtools/1.12 htslib/1.12 CNVkit/0.9.8 bcftools
-bcftools view ../../onlyvcf/SNP/mine_hunde_renamed.vcf.gz -s  FIL1  -Oz -o FIL1.vcf.gz -i'FILTER="PASS"' 
-echo "FIL1 done"
-tabix FIL1.vcf.gz
-echo "FIL1 tabix done"
+bcftools view ../../onlyvcf/SNP/mine_hunde_renamed.vcf.gz -s  PATH  -Oz -o SAMPLE.vcf.gz -i'FILTER="PASS"' 
+echo "SAMPLE done"
+tabix SAMPLE.vcf.gz
+echo "SAMPLE tabix done"
