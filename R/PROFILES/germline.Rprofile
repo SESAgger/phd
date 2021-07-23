@@ -18,8 +18,24 @@
     }   
 
     .env$libraries()
-    
 
+
+#Div
+    .env$gem<-function(navn){
+        image<-paste(deparse(substitute(navn)),".Rdata",sep="")
+        commands<-paste(deparse(substitute(navn)),".Rhistory",sep="")
+        save.image(image)
+        savehistory(commands)
+        print(paste("Image saved as ",navn,".Rdata and history saved as ",navn,".Rhistory",sep=""))
+    }
+
+     .env$hent<-function(navn){
+        image<-paste(deparse(substitute(navn)),".Rdata",sep="")
+        commands<-paste(deparse(substitute(navn)),".Rhistory",sep="")
+        load(image)
+        loadhistory(commands)
+        print(paste("Image loaded from ",navn,".Rdata and history loaded from ",navn,".Rhistory",sep=""))
+    }
 
 #Input stuff
     .env$lavfil <- function(df,filnavn,separator){
