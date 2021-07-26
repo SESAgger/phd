@@ -19,8 +19,8 @@ step=args.step
 
 
 size=7
-pattern1="_R1_"
-pattern2="_R2_"
+pattern1="_R1"
+pattern2="_R2"
 
 if("bam" in step):
     size=6
@@ -54,7 +54,7 @@ while i < len(liste):
         exit()
     elif(len(tsv)<size):
         print("You're missing a column\n\n")
-        exit
+        exit()
     else:
         print("Something's wrong with the file format")
         exit()
