@@ -9,6 +9,7 @@ parser=argparse.ArgumentParser(description="Check tsv for sarek")
 parser.add_argument("tsv",help="file to check",default="samples.tsv")
 parser.add_argument("step",help="step the file is to be used for\n mapping - fastq-mapping\n dup_mar_tab for check output from prepare recalibration",default="mapping")
 
+
 argcomplete.autocomplete(parser)
 args = parser.parse_args()
 

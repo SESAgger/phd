@@ -82,8 +82,7 @@
 
 
 #Statistics stuff
-    .env$hp_calc<-function (df, bin_size, bin_step) 
-{
+    .env$hp_calc<-function (df, bin_size, bin_step){
     df3 <- c()
     j <- 1
     print("Binning starting, Do you have $C1,$C2 and $G0? Should be done on plink.frq.counts files")
