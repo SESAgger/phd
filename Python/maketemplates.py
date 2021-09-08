@@ -30,7 +30,7 @@ template=tfil.readlines()
 while i < len(liste):
 	sti=liste[i].replace('\n','')
 	i+=1
-	isample=str(sti).find('STI')
+	isample=str(sti).find('PATH')
 	navn=str(sti)[isample+1:]
 	sample=navn.split("/")[-1].split(".")[0]
 	filnavn=args.name+"_"+sample+'.sh'
@@ -39,7 +39,7 @@ while i < len(liste):
 	#print(navn+"done")
 	nyfil=open(filnavn,"w")
 	for j in range(len(template)):
-		nyline=template[j].replace('STI',navn)
+		nyline=template[j].replace('PATH',navn)
 		nyline=nyline.replace('TID','5:0:0')
 		nyline=nyline.replace('SAMPLE',sample)
 		nyfil.write(nyline)
