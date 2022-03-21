@@ -1,4 +1,3 @@
-
 .First<-function(){
     #Initiating profile
     cat("Successfully loaded profile for germline analysis \n")
@@ -11,7 +10,7 @@
     .env<-new.env()
 
 #Loading necessary packages
-    .env$packages <- c("qqman","tidyverse","gdata","biomaRt","utils","data.table","ggrepel","RColorBrewer")
+    .env$packages <- c("tidyverse","gdata","biomaRt","utils","data.table","ggrepel","RColorBrewer")
 
     .env$libraries<-function(){
     sapply(.env$packages,require,character=TRUE)
@@ -45,11 +44,11 @@
         fwrite(df, file = filnavn, append = FALSE, quote = "auto", sep = separator,row.names = FALSE,)
     }
 
-    .env$hentfil<-function(filnavn,varnavn,separator){
-        if(missing(separator)){
-                   separator="\t"
-            }
-        data<-fread(filnavn,header=TRUE,stringsAsFactors=TRUE,sep=separator)
+    .env$hentfil<-function(filnavn,varnavn,separator="\t",head=TRUE){
+        if(separator=="plink"){
+            separator=""
+        }
+        data<-fread(filnavn,header=head,stringsAsFactors=FALSE,sep=separator)
         assign(paste(deparse(substitute(varnavn))),data,envir=.GlobalEnv)
         }
 
@@ -151,7 +150,7 @@
     }
 
     .env$addgenes<-function(df){
-        ensembl<-useMart("ENSEMBL_MART_ENSEMBL",dataset="clfamiliaris_gene_ensembl")
+        ensembl<-useEnsembl(biomart = 'genes', dataset = 'cfamiliaris_gene_ensembl', version = 99)
         df1<-subset(df,Gene!="-")
         df2<-df1 %>% count(Gene)
         print("annotation starting")
