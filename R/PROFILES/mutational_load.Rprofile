@@ -1,16 +1,16 @@
 .First<-function(){
-    #Initiating profile - test
+    #Initiating profile
     cat("Successfully loaded profile for germline analysis \n")
 }
 
 #Setting paths to libraries, rm if not using uppmax.
-    .libPaths(c("/home/sesagger/R/packages", .libPaths()))
+#    .libPaths(c("/home/sesagger/R/packages", .libPaths()))
 
 #Make new environment.
     .env<-new.env()
 
 #Loading necessary packages
-    .env$packages <- c("tidyverse","gdata","biomaRt","utils","data.table","ggrepel","RColorBrewer")
+    .env$packages <- c("tidyverse","gdata","utils","data.table","ggrepel","RColorBrewer")
 
     .env$libraries<-function(){
     sapply(.env$packages,require,character=TRUE)
@@ -20,21 +20,6 @@
 
 
 #Div
-    .env$gem<-function(navn){
-        image<-paste(deparse(substitute(navn)),".Rdata",sep="")
-        commands<-paste(deparse(substitute(navn)),".Rhistory",sep="")
-        save.image(image)
-        savehistory(commands)
-        print(paste("Image saved as ",navn,".Rdata and history saved as ",navn,".Rhistory",sep=""))
-    }
-
-     .env$hent<-function(navn){
-        image<-paste(deparse(substitute(navn)),".Rdata",sep="")
-        commands<-paste(deparse(substitute(navn)),".Rhistory",sep="")
-        load(image)
-        loadhistory(commands)
-        print(paste("Image loaded from ",navn,".Rdata and history loaded from ",navn,".Rhistory",sep=""))
-    }
 
 #Input stuff
     .env$lavfil <- function(df,filnavn,separator){
