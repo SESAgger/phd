@@ -24,11 +24,11 @@ args = parser.parse_args()
 
 
 #Import the specific canids genotype info
-canid = pd.read_csv("$SCRATCH/$line.tsv", sep = '\t', names = ["CHROM","POS","TGT"])
-name = $line
+canid = pd.read_csv(args.sample_file, sep = '\t', names = ["CHROM","POS","TGT"])
+
 
 #Import the reference file
-refa = pd.read_csv($reffile, sep='\t',dtype = {'CHROM': object, 'POS': int, 'AA': object, 'DER': object, 'Type': object, 'PhyloP': float, 'SIFT_txt': object, 'SIFT_score': float, 'Consequence': object })
+refa = pd.read_csv(args.reference_file, sep='\t',dtype = {'CHROM': object, 'POS': int, 'AA': object, 'DER': object, 'Type': object, 'PhyloP': float, 'SIFT_txt': object, 'SIFT_score': float, 'Consequence': object })
 
 # Combine the 2 dataframes
 canid_for_calc=canid.merge(refa, how = "left")
@@ -82,7 +82,7 @@ phylop_mutational_load_nongenic=phylo_score_hom_tv_nongenic/(hom_der_nongenic+ho
 sift_mutational_load_nongenic=sift_score_hom_tv_nongenic/(hom_der_nongenic+hom_anc_nongenic)
 
 #Summary
-w=open(name+"mutational_load_summary.txt",'w')
+w=open(args.name+"mutational_load_summary.txt",'w')
 w.write(
 f'''#Summary from processing of test
 #Can be read as tsv with comment="#" and sep="\\t"

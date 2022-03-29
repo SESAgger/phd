@@ -97,3 +97,5 @@ ref1=ref.merge(sift,how="outer")
 ref1.to_csv(args.name+"_annotated_AA_TSTV_PhyloP_SIFT.tsv",sep="\t",columns=["CHROM","POS","AA","DER","Type","PhyloP","SIFT_score","SIFT_txt","Consequence"],index=False)
 
 ref1[(ref1["AA"]!="")&(ref1["Type"]=="V")&(ref1.SIFT_txt.notna())].to_csv(args.name+"_der_transversions_sift_pp.tsv",sep="\t",columns=["CHROM","POS","DER","Type","PhyloP","SIFT_score","SIFT_txt","Consequence"],index=False)
+
+print("Files called: "args.name+"_annotated_AA_TSTV_PhyloP_SIFT.tsv and " + args.name+"_der_transversions_sift_pp.tsv")
