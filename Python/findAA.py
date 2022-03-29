@@ -18,7 +18,7 @@ parser.add_argument("-s","--sift",help="siftfile")
 
 
 args = parser.parse_args()
-aa = pd.read_csv(args.sample_file,sep='\t')
+aa = pd.read_csv(args.input_file,sep='\t')
 number_of_canids=len(aa.columns[aa.columns.str.find("GT")!=-1])
 
 aa.columns=aa.columns.str.lstrip(" # [1234567890]").str.replace(":GT","")
