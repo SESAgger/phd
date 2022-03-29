@@ -70,8 +70,8 @@ hom_anc_nongenic=len(canid_for_calc[(canid_for_calc["Type"]=="V")&(canid_for_cal
 
 ## Results
 ### All
-phylop_mutational_load=phylo_score_score_hom_tv/(hom_der+hom_anc)
-sift_mutational_load=sift_score_score_hom_tv/(hom_der+hom_anc)
+phylop_mutational_load=phylo_score_hom_tv/(hom_der+hom_anc)
+sift_mutational_load=sift_score_hom_tv/(hom_der+hom_anc)
 
 ### Genic
 phylop_mutational_load_genic=phylo_score_hom_tv_genic/(hom_der_genic+hom_anc_genic)
