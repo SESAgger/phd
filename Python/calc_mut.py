@@ -8,6 +8,9 @@ import sys
 import csv
 import pandas as pd 
 import numpy as np
+import io
+import subprocess
+import sys
 
 from sigfig import round
 
@@ -22,94 +25,138 @@ parser.add_argument("-n","--name", help="Name for produced files.",default="ny")
 args = parser.parse_args()
 
 
+# Input
+## Get all animals directly from stdout
+input_file=subprocess.run(['bcftools','query','-f%CHROM\t%POS\t%REF\t%ALT[\t%TGT]\n',args.sample_file,'-H'],stdout=subprocess.PIPE)
+data = io.StringIO(input_file.stdout.decode())
+canids=pd.read_csv(data, sep="\t")
+canids.columns=canids.columns.str.lstrip(" # [1234567890]").str.replace(":GT","")
+ids=canids.columns[4:]
 
-#Import the specific canids genotype info
-canid = pd.read_csv(args.sample_file, sep = '\t', names = ["CHROM","POS","TGT"])
-
-
-#Import the reference file
+## Import the reference file
 refa = pd.read_csv(args.reference_file, sep='\t',dtype = {'CHROM': object, 'POS': int, 'AA': object, 'DER': object, 'Type': object, 'PhyloP': float, 'SIFT_txt': object, 'SIFT_score': float, 'Consequence': object })
 
 # Combine the 2 dataframes
-canid_for_calc=canid.merge(refa, how = "left")
+canids_for_calc=canids.merge(refa, how = "left")
 
-# Figure out if the GT is homozygous derived allel or if either PhyloP, sift or derived allele is unknown 
-der_and_tv = (canid_for_calc["TGT"] == canid_for_calc["DER"] + "/" + canid_for_calc["DER"])
-
-## Across genome
-phylo_score_hom_tv = canid_for_calc[der_and_tv].PhyloP.sum()
-sift_score_hom_tv = canid_for_calc[der_and_tv].SIFT_score.sum()
-#phastcon_score_hom_tv = canid_for_calc[der_and_tv].PhastCon.sum()
-
-## Genic
-phylo_score_hom_tv_genic = canid_for_calc[(der_and_tv)&(canid_for_calc["Consequence"]!="intergenic_variant")].PhyloP.sum()
-sift_score_hom_tv_genic = canid_for_calc[(der_and_tv)&(canid_for_calc["Consequence"]!="intergenic_variant")].SIFT_score.sum()
-#phastcon_score_hom_tv = canid_for_calc[(der_and_tv)&(canid_for_calc["Consequence"]!="intergenic_variant")].PhastCon.sum()
-
-## Non-genic
-phylo_score_hom_tv_nongenic = canid_for_calc[(der_and_tv)&(canid_for_calc["Consequence"]=="intergenic_variant")].PhyloP.sum()
-sift_score_hom_tv_nongenic = canid_for_calc[(der_and_tv)&(canid_for_calc["Consequence"]=="intergenic_variant")].SIFT_score.sum()
-#phastcon_score_hom_tv = canid_for_calc[(der_and_tv)&(canid_for_calc["Consequence"]=="intergenic_variant")].PhastCon.sum()
-
-# Generals
-
-## Genic and nongenic SNPs
-intergenic_variants=len(canid_for_calc[(der_and_tv)&(canid_for_calc["Consequence"]=="intergenic_variant")])
-genic_variants=len(canid_for_calc[(der_and_tv)&(canid_for_calc["Consequence"]!="intergenic_variant")])
-
-
-## Number of locations where a transversion has happened and gt=the derived allele
-hom_der=len(canid_for_calc[(canid_for_calc["Type"]=="V")&(canid_for_calc["TGT"] == canid_for_calc["DER"] + "/" + canid_for_calc["DER"])].index)
-hom_der_genic=len(canid_for_calc[(canid_for_calc["Type"]=="V")&(canid_for_calc["TGT"] == canid_for_calc["DER"] + "/" + canid_for_calc["DER"])&(canid_for_calc["Consequence"]=="intergenic_variant")].index)
-hom_der_nongenic=len(canid_for_calc[(canid_for_calc["Type"]=="V")&(canid_for_calc["TGT"] == canid_for_calc["DER"] + "/" + canid_for_calc["DER"])&(canid_for_calc["Consequence"]!="intergenic_variant")].index)
-
-## Number of locations where gt=the ancestral allele
-hom_anc=len(canid_for_calc[(canid_for_calc["Type"]=="V")&(canid_for_calc["TGT"] == canid_for_calc["AA"] + "/" + canid_for_calc["AA"])].index)
-hom_anc_genic=len(canid_for_calc[(canid_for_calc["Type"]=="V")&(canid_for_calc["TGT"] == canid_for_calc["AA"] + "/" + canid_for_calc["AA"])&(canid_for_calc["Consequence"]=="intergenic_variant")].index)
-hom_anc_nongenic=len(canid_for_calc[(canid_for_calc["Type"]=="V")&(canid_for_calc["TGT"] == canid_for_calc["AA"] + "/" + canid_for_calc["AA"])&(canid_for_calc["Consequence"]!="intergenic_variant")].index)
-
-## Results
-### All
-phylop_mutational_load=phylo_score_hom_tv/(hom_der+hom_anc)
-sift_mutational_load=sift_score_hom_tv/(hom_der+hom_anc)
-
-### Genic
-phylop_mutational_load_genic=phylo_score_hom_tv_genic/(hom_der_genic+hom_anc_genic)
-sift_mutational_load_genic=sift_score_hom_tv_genic/(hom_der+hom_anc)
-
-### Non-genic
-phylop_mutational_load_nongenic=phylo_score_hom_tv_nongenic/(hom_der_nongenic+hom_anc_nongenic)
-sift_mutational_load_nongenic=sift_score_hom_tv_nongenic/(hom_der_nongenic+hom_anc_nongenic)
-
-#Summary
-w=open(args.name+"mutational_load_summary.txt",'w')
-w.write(
-f'''#Summary from processing of test
-#Can be read as tsv with comment="#" and sep="\\t"
-## Background info
-Number of non-genic variants:\t {intergenic_variants} 
-Number of non-genic variants:\t {genic_variants} 
-
-Number of derived alleles:\t {hom_der}
-Number of genic derived alleles:\t {hom_der_genic}
-Number of nongenic derived alleles:\t {hom_der_nongenic}
-Number of ancestral alleles:\t {hom_anc}
-Number of genic ancestral alleles:\t {hom_anc_genic}
-Number of nongenic ancestral alleles:\t {hom_anc_genic}
-
-## Results
-### All positions
-PhyloP mutational load:\t  {round(phylop_mutational_load,sigfigs=2)}  \n
-Sift mutational load:\t  {round(sift_mutational_load,sigfigs=2)}  \n
+# Run the pipeline
+i=0
+t=pd.DataFrame([])
+while i < len(ids):
+    # Variables
+    w_pp_ph = (canids_for_calc.PhastCon.notna())&(canids_for_calc.PhyloP.notna())
+    w_pp_ph_sift = (canids_for_calc.PhastCon.notna())&(canids_for_calc.PhyloP.notna())&(canids_for_calc.SIFT_score)
+    intergen = (canids_for_calc["Consequence"]=="intergenic_variant")
+    gen = (canids_for_calc["Consequence"]!="intergenic_variant")
+    anca = (canids_for_calc[ids[i]] == canids_for_calc["AA"] + "/" + canids_for_calc["AA"])
     
-### Genic positions
-Genic PhyloP mutational load:\t  {round(phylop_mutational_load_genic,sigfigs=2)}
-Genic Sift mutational load:\t  {round(sift_mutational_load_genic,sigfigs=2)}
+    ## Figure out if the GT is homozygous derived allel or if either PhyloP, sift or derived allele is unknown 
+    der_and_tv = (canids_for_calc[ids[i]] == canids_for_calc["DER"] + "/" + canids_for_calc["DER"])
+
+    # Conservation scores
+    ## Across genome
+    phylo_score_hom_tv = canids_for_calc[der_and_tv].PhyloP.sum()
+    sift_score_hom_tv = canids_for_calc[der_and_tv].SIFT_score.sum()
+    phastcon_score_hom_tv = canids_for_calc[der_and_tv].PhastCon.sum()
+
+    ## Genic
+    phylo_score_hom_tv_genic = canids_for_calc[der_and_tv&gen].PhyloP.sum()
+    sift_score_hom_tv_genic = canids_for_calc[der_and_tv&gen].SIFT_score.sum()
+    phastcon_score_hom_tv_genic = canids_for_calc[der_and_tv&gen].PhastCon.sum()
     
-### Nongenic positions
-Nongenic PhyloP mutational load:\t  {round(phylop_mutational_load_nongenic,sigfigs=2)}
-Nongenic Sift mutational load:\t  {round(sift_mutational_load_nongenic,sigfigs=2)}
-'''
-)
-w.close()
+    ## Non-genic
+    phylo_score_hom_tv_nongenic = canids_for_calc[der_and_tv&intergen].PhyloP.sum()
+    sift_score_hom_tv_nongenic = canids_for_calc[der_and_tv&intergen].SIFT_score.sum()
+    phastcon_score_hom_tv_nongenic = canids_for_calc[der_and_tv&intergen].PhastCon.sum()    
+    
+    # General results
+
+    ## Genic and nongenic SNPs
+    variants=len(canids_for_calc[der_and_tv])
+    genic_variants=len(canids_for_calc[der_and_tv&gen])
+    intergenic_variants=len(canids_for_calc[der_and_tv&intergen])
+
+
+    ## Denominators
+    ### In total
+    hom_der=len(canids_for_calc[(canids_for_calc["Type"]=="V")&der_and_tv].index)
+    hom_der_genic=len(canids_for_calc[(canids_for_calc["Type"]=="V")&der_and_tv&gen].index)
+    hom_der_nongenic=len(canids_for_calc[(canids_for_calc["Type"]=="V")&(der_and_tv)&intergen].index)
+    
+    ### With PhyloP, and PhastCon
+    hom_der_pp_ph=len(canids_for_calc[(canids_for_calc["Type"]=="V")&der_and_tv&w_pp_ph].index)
+    hom_der_genic_pp_ph=len(canids_for_calc[(canids_for_calc["Type"]=="V")&der_and_tv&gen&w_pp_ph].index)
+    hom_der_nongenic_pp_ph=len(canids_for_calc[(canids_for_calc["Type"]=="V")&der_and_tv&intergen&w_pp_ph].index)
+    
+    ### With SIFT, PhyloP, and PhastCon
+    hom_der_s_pp_ph=len(canids_for_calc[(canids_for_calc["Type"]=="V")&der_and_tv&w_pp_ph_sift].index)
+    hom_der_genic_s_pp_ph=len(canids_for_calc[(canids_for_calc["Type"]=="V")&der_and_tv&gen&w_pp_ph_sift].index)
+    hom_der_nongenic_s_pp_ph=len(canids_for_calc[(canids_for_calc["Type"]=="V")&(der_and_tv)&intergen&w_pp_ph_sift].index)
+    
+    # Number of locations where gt=the ancestral allele
+    ### In total
+    hom_anc=len(canids_for_calc[anca].index)
+    hom_anc_genic=len(canids_for_calc[anca&gen].index)
+    hom_anc_nongenic=len(canids_for_calc[anca&intergen].index)
+    
+    ### With PhyloP, and PhastCon
+    hom_anc_pp_ph=len(canids_for_calc[anca&w_pp_ph].index)
+    hom_anc_genic_pp_ph=len(canids_for_calc[anca&gen&w_pp_ph].index)
+    hom_anc_nongenic_pp_ph=len(canids_for_calc[anca&intergen&w_pp_ph].index)
+    
+    ### With SIFT, PhyloP, and PhastCon
+    hom_anc_s_pp_ph=len(canids_for_calc[anca&w_pp_ph_sift].index)
+    hom_anc_genic_s_pp_ph=len(canids_for_calc[anca&gen&w_pp_ph_sift].index)
+    hom_anc_nongenic_s_pp_ph=len(canids_for_calc[anca&intergen&w_pp_ph_sift].index)
+    
+    ## Results
+    ### All
+    phylop_mutational_load=phylo_score_hom_tv/(hom_der_pp_ph+hom_anc_pp_ph)
+    phast_mutational_load=phastcon_score_hom_tv/(hom_der_pp_ph+hom_anc_pp_ph)
+    
+    sift_mutational_load=sift_score_hom_tv/(hom_der_s_pp_ph+hom_anc_s_pp_ph)
+
+    
+    ### Genic
+    phylop_mutational_load_genic=phylo_score_hom_tv_genic/(hom_der_genic_pp_ph+hom_anc_genic_pp_ph)
+    phast_mutational_load_genic=phastcon_score_hom_tv_genic/(hom_der_genic_pp_ph+hom_anc_genic_pp_ph)
+
+    sift_mutational_load_genic=sift_score_hom_tv_genic/(hom_der_nongenic_s_pp_ph+hom_anc_genic_s_pp_ph)
+
+    
+    ### Non-genic
+    #print(phylo_score_hom_tv_nongenic)
+    #print(hom_der_nongenic_pp_ph)
+    phylop_mutational_load_nongenic=phylo_score_hom_tv_nongenic/(hom_der_nongenic_pp_ph+hom_anc_nongenic_pp_ph)
+    phast_mutational_load_nongenic=phastcon_score_hom_tv_nongenic/(hom_der_nongenic_pp_ph+hom_anc_nongenic_pp_ph)
+    if(hom_der_nongenic_s_pp_ph==0&hom_anc_nongenic_s_pp_ph==0):
+        sift_mutational_load_nongenic=0
+    else:
+        sift_mutational_load_nongenic=sift_score_hom_tv_nongenic/(hom_der_nongenic_s_pp_ph+hom_anc_nongenic_s_pp_ph)
+
+    
+    #Make dataframe
+    mutational_load = [[ids[i],phylop_mutational_load,sift_mutational_load,phast_mutational_load,
+                        phylop_mutational_load_genic, sift_mutational_load_genic,phast_mutational_load_genic,
+                        phylop_mutational_load_nongenic,sift_mutational_load_nongenic,phast_mutational_load_nongenic,
+                        phylo_score_hom_tv,sift_score_hom_tv,phastcon_score_hom_tv,
+                        phylo_score_hom_tv_genic,sift_score_hom_tv_genic,phastcon_score_hom_tv_genic,
+                        phylo_score_hom_tv_nongenic,sift_score_hom_tv_nongenic,phastcon_score_hom_tv_nongenic,
+                        hom_anc,hom_anc_genic,hom_anc_nongenic,
+                        hom_der,hom_der_genic,hom_der_nongenic]
+                      ]
+     
+    # Create the pandas DataFrame
+    df = pd.DataFrame(mutational_load, columns = ["ID", 'PhyloP mutational load','Sift mutational load','PhastCon mutational load',
+                                                  'Genic PhyloP mutational load','Genic Sift mutational load','Genic PhastCon mutational load',
+                                                  'Nongenic PhyloP mutational load','Nongenic Sift mutational load','Nongenic PhastCon mutational load',
+                                                  'Sum of PhyloP','Sum of Sift','Sum of PhastCon',
+                                                  'Sum of PhyloP in genes','Sum of Sift in genes','Sum of PhastCon in genes',
+                                                  'Sum of PhyloP outside genes','Sum of Sift outside genes','Sum of PhastCon outside genes',                        
+                                                  'Ancestral alleles',"Genic Ancestral alleles",'Non-genic Ancestral alleles','Derived transversion','Genic derived transversions','Non-genic derived transversions'])
+    t=pd.concat([t,df])
+    i=i+1
+
+t.to_csv(args.name+'mutational_load.tsv', sep = "\t", index = False,mode="w")
+
 
