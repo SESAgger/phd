@@ -102,6 +102,6 @@ ref1=ref.merge(sift,how="outer")
 ref2=ref1.merge(phast,how="left")
 
 #Make reference file
-ref2.to_csv("~/Downloads/ref.tsv", sep = "\t", columns = ["CHROM","POS","AA","DER","Type","PhyloP","SIFT_txt","SIFT_score","Consequence","PhastCon"], index = False)
+ref2.to_csv(args.name+"ref_file.tsv", sep = "\t", columns = ["CHROM","POS","AA","DER","Type","PhyloP","SIFT_txt","SIFT_score","Consequence","PhastCon"], index = False)
 
 print("File is called: "+args.name+"_annotated_AA_TSTV_PhyloP_SIFT.tsv")
