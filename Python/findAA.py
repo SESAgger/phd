@@ -15,7 +15,7 @@ parser.add_argument("-i","--input_file",help="sample file, must be tsv, path can
 parser.add_argument("-n","--name",help="What you want the output to be called", default="AA")
 parser.add_argument("-p","--phylop",help="phylopfile")
 parser.add_argument("-s","--sift",help="siftfile")
-parser.add_argument("-h","--phast",help="phastfile")
+parser.add_argument("-t","--phast",help="phastfile")
 
 
 
