@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # PYTHON_ARGCOMPLETE_OK
 
 import argparse
@@ -11,12 +11,13 @@ import numpy as np
 import io
 import subprocess
 import sys
+import time
 
-from sigfig import round
+start = time.time()
 
 
 parser=argparse.ArgumentParser(description="Calculates mutational load")
-parser.add_argument("-s","--sample_file",help="tsv with CHROM, POS, TGT")
+parser.add_argument("-s","--sample_file",help="vcf file for bcftools")
 parser.add_argument("-r","--reference_file",
 help="What's your reference")
 parser.add_argument("-n","--name", help="Name for produced files.",default="ny")
@@ -27,22 +28,29 @@ args = parser.parse_args()
 
 # Input
 ## Get all animals directly from stdout
-input_file=subprocess.run(['bcftools','query','-f%CHROM\t%POS\t%REF\t%ALT[\t%TGT]\n',args.sample_file,'-H'],stdout=subprocess.PIPE)
-data = io.StringIO(input_file.stdout.decode())
-canids=pd.read_csv(data, sep="\t")
-canids.columns=canids.columns.str.lstrip(" # [1234567890]").str.replace(":GT","")
-ids=canids.columns[4:]
+#Get all animals directly from stdout
+input_file=subprocess.run(['bcftools','query','-l','/Users/jqc305/Downloads/chr38_outgroup.vcf.gz'],stdout=subprocess.PIPE)
+ids=input_file.stdout.decode().split("\n")
+print("Canid IDs imported after: "+str(round(time.process_time(),2))+"s")
 
 ## Import the reference file
 refa = pd.read_csv(args.reference_file, sep='\t',dtype = {'CHROM': object, 'POS': int, 'AA': object, 'DER': object, 'Type': object, 'PhyloP': float, 'SIFT_txt': object, 'SIFT_score': float, 'Consequence': object })
+print("Reference imported after: "+str(round(time.process_time(),2))+"s")
 
-# Combine the 2 dataframes
-canids_for_calc=canids.merge(refa, how = "left")
 
 # Run the pipeline
 i=0
 t=pd.DataFrame([])
 while i < len(ids):
+    #Get the animals directly from stdout one at a time to avoid ridiculus memory use
+    input_file=subprocess.run(['bcftools','query','-f%CHROM\t%POS\t%REF\t%ALT[\t%TGT]\n',"/Users/jqc305/Downloads/chr38_outgroup.vcf.gz",'-H','-s',ids[i]],stdout=subprocess.PIPE)
+    data = io.StringIO(input_file.stdout.decode())
+    canids=pd.read_csv(data,sep="\t")
+    canids.columns=canids.columns.str.lstrip(" # [1234567890]").str.replace(":GT","")
+    # Combine the 2 dataframes
+    canids_for_calc=canids.merge(refa, how = "left")
+
+    print("DF combined after: "+str(round(time.process_time(),2))+"s")
     # Variables
     w_pp_ph = (canids_for_calc.PhastCon.notna())&(canids_for_calc.PhyloP.notna())
     w_pp_ph_sift = (canids_for_calc.PhastCon.notna())&(canids_for_calc.PhyloP.notna())&(canids_for_calc.SIFT_score)
@@ -155,6 +163,8 @@ while i < len(ids):
                                                   'Sum of PhyloP outside genes','Sum of Sift outside genes','Sum of PhastCon outside genes',                        
                                                   'Ancestral alleles',"Genic Ancestral alleles",'Non-genic Ancestral alleles','Derived transversion','Genic derived transversions','Non-genic derived transversions'])
     t=pd.concat([t,df])
+
+    print(str(ids[i])+" finished after: "+str(round(time.process_time(),2))+"s")
     i=i+1
 
 t.to_csv(args.name+'mutational_load.tsv', sep = "\t", index = False,mode="w")
