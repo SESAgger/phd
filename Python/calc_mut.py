@@ -29,7 +29,7 @@ args = parser.parse_args()
 # Input
 ## Get all animals directly from stdout
 #Get all animals directly from stdout
-input_file=subprocess.run(['bcftools','query','-l','/Users/jqc305/Downloads/chr38_outgroup.vcf.gz'],stdout=subprocess.PIPE)
+input_file=subprocess.run(['bcftools','query','-l',args.sample_file],stdout=subprocess.PIPE)
 ids=input_file.stdout.decode().split("\n")
 print("Canid IDs imported after: "+str(round(time.process_time(),2))+"s")
 
@@ -43,7 +43,7 @@ i=0
 t=pd.DataFrame([])
 while i < len(ids):
     #Get the animals directly from stdout one at a time to avoid ridiculus memory use
-    input_file=subprocess.run(['bcftools','query','-f%CHROM\t%POS\t%REF\t%ALT[\t%TGT]\n',"/Users/jqc305/Downloads/chr38_outgroup.vcf.gz",'-H','-s',ids[i]],stdout=subprocess.PIPE)
+    input_file=subprocess.run(['bcftools','query','-f%CHROM\t%POS\t%REF\t%ALT[\t%TGT]\n',args.sample_file,'-H','-s',ids[i]],stdout=subprocess.PIPE)
     data = io.StringIO(input_file.stdout.decode())
     canids=pd.read_csv(data,sep="\t")
     canids.columns=canids.columns.str.lstrip(" # [1234567890]").str.replace(":GT","")
