@@ -32,7 +32,7 @@ log_file=open(args.name+"_log.txt",'a')
 #Get all animals directly from stdout
 input_file=subprocess.run(['bcftools','query','-l',args.sample_file],stdout=subprocess.PIPE)
 ids=input_file.stdout.decode().split("\n")
-open(log_file,'a').write("Canid IDs imported after: "+str(round(time.process_time(),2))+"s\n")
+log_file.write("Canid IDs imported after: "+str(round(time.process_time(),2))+"s\n")
 
 ## Import the reference file
 refa = pd.read_csv(args.reference_file, sep='\t',dtype = {'CHROM': object, 'POS': int, 'AA': object, 'DER': object, 'Type': object, 'PhyloP': float, 'SIFT_txt': object, 'SIFT_score': float, 'Consequence': object })
