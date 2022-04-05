@@ -26,7 +26,7 @@ parser.add_argument("-n","--name", help="Name for produced files.",default="ny")
 
 args = parser.parse_args()
 
-logging.basicConfig(filename=args.name+"_log.txt", encoding='utf-8', level=logging.DEBUG)
+logging.basicConfig(filename=args.name+"_log.txt", level=logging.DEBUG)
 
 # Input
 ## Get all animals directly from stdout
