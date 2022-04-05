@@ -15,6 +15,8 @@ import time
 import logging
 from time import perf_counter
 
+start=perf_counter()
+
 parser=argparse.ArgumentParser(description="Calculates mutational load")
 parser.add_argument("-s","--sample_file",help="vcf file for bcftools")
 parser.add_argument("-r","--reference_file",
@@ -25,7 +27,7 @@ parser.add_argument("-n","--name", help="Name for produced files.",default="ny")
 args = parser.parse_args()
 
 logging.basicConfig(filename=args.name+"_log.txt", level=logging.DEBUG)
-logging.info("Start pipeline: "+str(round(perf_counter(),2))+"s\n")
+logging.info("Start pipeline: "+str(round(perf_counter()-start,2))+"s\n")
 
 # Input
 ## Find number of animals in file 
@@ -34,7 +36,7 @@ with open(args.sample_file) as f:
 
 ## Import the reference file
 refa = pd.read_csv(args.reference_file, sep='\t',dtype = {'CHROM': object, 'POS': int, 'AA': object, 'DER': object, 'Type': object, 'PhyloP': float, 'SIFT_txt': object, 'SIFT_score': float, 'Consequence': object })
-logging.info("Reference imported after: "+str(round(perf_counter(),2))+"s\n")
+logging.info("Reference imported after: "+str(round(perf_counter()-start,2))+"s\n")
 
 
 
@@ -46,14 +48,14 @@ while i < ids:
     canids=pd.read_csv(args.sample_file,sep="\t",usecols=[0,1,i+2])
     canids.columns=canids.columns.str.lstrip(" # [1234567890]").str.replace(":GT","")
 
-    logging.info(str(canids.columns[2])+" started after: "+str(round(perf_counter(),2))+"s\n")    
+    logging.info(str(canids.columns[2])+" started after: "+str(round(perf_counter()-start,2))+"s\n")    
 
     # Combine the 2 dataframes
     canids_for_calc=canids[['CHROM','POS',canids.columns[2]]].merge(refa, how = "left")
 
-    logging.info("Dataframes merged after: "+str(round(perf_counter(),2))+"s\n")
+    logging.info("Dataframes merged after: "+str(round(perf_counter()-start,2))+"s\n")
 
-    logging.info(str(canids.columns[2])+": DFs combined after: "+str(round(perf_counter(),2))+"s\n")
+    logging.info(str(canids.columns[2])+": DFs combined after: "+str(round(perf_counter()-start,2))+"s\n")
     # Variables
     w_pp_ph = (canids_for_calc.PhastCon.notna())&(canids_for_calc.PhyloP.notna())
     w_pp_ph_sift = (canids_for_calc.PhastCon.notna())&(canids_for_calc.PhyloP.notna())&(canids_for_calc.SIFT_score)
@@ -166,7 +168,7 @@ while i < ids:
                                                   'Ancestral alleles',"Genic Ancestral alleles",'Non-genic Ancestral alleles','Derived transversion','Genic derived transversions','Non-genic derived transversions'])
     t=pd.concat([t,df])
 
-    logging.info(str(canids.columns[2])+" finished after: "+str(round(perf_counter(),2))+"s\n")
+    logging.info(str(canids.columns[2])+" finished after: "+str(round(perf_counter()-start,2))+"s\n")
     i=i+1
 
 t.to_csv(args.name+'mutational_load.tsv', sep = "\t", index = False,mode="w")
