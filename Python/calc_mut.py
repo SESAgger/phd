@@ -32,27 +32,26 @@ logging.basicConfig(filename=args.name+"_log.txt", level=logging.DEBUG)
 # Input
 ## Get all animals directly from stdout
 #Get all animals directly from stdout
-input_file=subprocess.run(['bcftools','query','-l',args.sample_file],stdout=subprocess.PIPE)
-ids=input_file.stdout.decode().split("\n")
-logging.info("Canid IDs imported after: "+str(round(perf_counter(),2))+"s\n")
+canids=pd.read_csv(args.sample_file,sep="\t")
+canids.columns=canids.columns.str.lstrip(" # [1234567890]").str.replace(":GT","")
+
+ids=canids.columns[4:]
 
 ## Import the reference file
 refa = pd.read_csv(args.reference_file, sep='\t',dtype = {'CHROM': object, 'POS': int, 'AA': object, 'DER': object, 'Type': object, 'PhyloP': float, 'SIFT_txt': object, 'SIFT_score': float, 'Consequence': object })
 logging.info("Reference imported after: "+str(round(perf_counter(),2))+"s\n")
 
+canids_for_calc=canids.merge(refa, how = "left")
 
 # Run the pipeline
 i=0
 t=pd.DataFrame([])
 while i < len(ids):
     logging.info(str(ids[i])+" started after: "+str(round(perf_counter(),2))+"s\n")    
-    #Get the animals directly from stdout one at a time to avoid ridiculus memory use
-    input_file=subprocess.run(['bcftools','query','-f%CHROM\t%POS\t%REF\t%ALT[\t%TGT]\n',args.sample_file,'-H','-s',ids[i]],stdout=subprocess.PIPE)
-    data = io.StringIO(input_file.stdout.decode())
-    canids=pd.read_csv(data,sep="\t")
-    canids.columns=canids.columns.str.lstrip(" # [1234567890]").str.replace(":GT","")
+
     # Combine the 2 dataframes
-    canids_for_calc=canids.merge(refa, how = "left")
+    canid_for_calc=canids_for_calc[['CHROM','POS','AA', 'DER', 'Type', 'PhyloP', 'SIFT_txt', 'SIFT_score',
+       'Consequence', 'PhastCon',ids[i]]]
 
     logging.info(str(ids[i])+": DFs combined after: "+str(round(perf_counter(),2))+"s\n")
     # Variables
