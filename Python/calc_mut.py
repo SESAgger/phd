@@ -31,11 +31,11 @@ args = parser.parse_args()
 #Get all animals directly from stdout
 input_file=subprocess.run(['bcftools','query','-l',args.sample_file],stdout=subprocess.PIPE)
 ids=input_file.stdout.decode().split("\n")
-print("Canid IDs imported after: "+str(round(time.process_time(),2))+"s")
+sys.stdout.write("Canid IDs imported after: "+str(round(time.process_time(),2))+"s")
 
 ## Import the reference file
 refa = pd.read_csv(args.reference_file, sep='\t',dtype = {'CHROM': object, 'POS': int, 'AA': object, 'DER': object, 'Type': object, 'PhyloP': float, 'SIFT_txt': object, 'SIFT_score': float, 'Consequence': object })
-print("Reference imported after: "+str(round(time.process_time(),2))+"s")
+sys.stdout.write("Reference imported after: "+str(round(time.process_time(),2))+"s")
 
 
 # Run the pipeline
@@ -50,7 +50,7 @@ while i < len(ids):
     # Combine the 2 dataframes
     canids_for_calc=canids.merge(refa, how = "left")
 
-    print("DF combined after: "+str(round(time.process_time(),2))+"s")
+    sys.stdout.write("DF combined after: "+str(round(time.process_time(),2))+"s")
     # Variables
     w_pp_ph = (canids_for_calc.PhastCon.notna())&(canids_for_calc.PhyloP.notna())
     w_pp_ph_sift = (canids_for_calc.PhastCon.notna())&(canids_for_calc.PhyloP.notna())&(canids_for_calc.SIFT_score)
@@ -133,8 +133,6 @@ while i < len(ids):
 
     
     ### Non-genic
-    #print(phylo_score_hom_tv_nongenic)
-    #print(hom_der_nongenic_pp_ph)
     phylop_mutational_load_nongenic=phylo_score_hom_tv_nongenic/(hom_der_nongenic_pp_ph+hom_anc_nongenic_pp_ph)
     phast_mutational_load_nongenic=phastcon_score_hom_tv_nongenic/(hom_der_nongenic_pp_ph+hom_anc_nongenic_pp_ph)
     if(hom_der_nongenic_s_pp_ph==0&hom_anc_nongenic_s_pp_ph==0):
@@ -164,7 +162,7 @@ while i < len(ids):
                                                   'Ancestral alleles',"Genic Ancestral alleles",'Non-genic Ancestral alleles','Derived transversion','Genic derived transversions','Non-genic derived transversions'])
     t=pd.concat([t,df])
 
-    print(str(ids[i])+" finished after: "+str(round(time.process_time(),2))+"s")
+    sys.stdout.write(str(ids[i])+" finished after: "+str(round(time.process_time(),2))+"s")
     i=i+1
 
 t.to_csv(args.name+'mutational_load.tsv', sep = "\t", index = False,mode="w")
