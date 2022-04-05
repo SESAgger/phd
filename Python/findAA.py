@@ -8,7 +8,6 @@ import sys
 import csv
 import pandas as pd 
 import numpy as np
-from sigfig import round
 
 parser=argparse.ArgumentParser(description="Finds AA and TSTV for all positions.")
 parser.add_argument("-i","--input_file",help="sample file, must be tsv, path can be included (/proj/../fil.txt) ",default="samples.tsv")
