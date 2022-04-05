@@ -16,10 +16,9 @@ parser.add_argument("-p","--phylop",help="phylopfile")
 parser.add_argument("-s","--sift",help="siftfile")
 parser.add_argument("-t","--phast",help="phastfile")
 
-
-
 args = parser.parse_args()
-# Import files
+
+# Import files 
 ## Import the gts
 aa = pd.read_csv(args.input_file,sep='\t')
 ## Import the PhyloP scores
