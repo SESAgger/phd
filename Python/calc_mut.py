@@ -25,16 +25,12 @@ parser.add_argument("-n","--name", help="Name for produced files.",default="ny")
 args = parser.parse_args()
 
 logging.basicConfig(filename=args.name+"_log.txt", level=logging.DEBUG)
+logging.info("Start pipeline: "+str(round(perf_counter(),2))+"s\n")
 
 # Input
-## Get all animals directly from stdout
-#Get all animals directly from stdout
-canids=pd.read_csv(args.sample_file,sep="\t")
-canids.columns=canids.columns.str.lstrip(" # [1234567890]").str.replace(":GT","")
-
-ids=canids.columns[4:]
-
-logging.info("Dataframe imported after: "+str(round(perf_counter(),2))+"s\n")
+## Find number of animals in file 
+with open(args.sample_file) as f:
+    ids = f.readline().count(":GT")
 
 ## Import the reference file
 refa = pd.read_csv(args.reference_file, sep='\t',dtype = {'CHROM': object, 'POS': int, 'AA': object, 'DER': object, 'Type': object, 'PhyloP': float, 'SIFT_txt': object, 'SIFT_score': float, 'Consequence': object })
@@ -45,23 +41,28 @@ logging.info("Reference imported after: "+str(round(perf_counter(),2))+"s\n")
 # Run the pipeline
 i=0
 t=pd.DataFrame([])
-while i < len(ids):
-    logging.info(str(ids[i])+" started after: "+str(round(perf_counter(),2))+"s\n")    
+while i < ids:
+    #Get file
+    canids=pd.read_csv(args.sample_file,sep="\t",usecols=[0,1,i+2])
+    canids.columns=canids.columns.str.lstrip(" # [1234567890]").str.replace(":GT","")
+
+    logging.info(str(canids.columns[2])+" started after: "+str(round(perf_counter(),2))+"s\n")    
 
     # Combine the 2 dataframes
-    canids_for_calc=canids[['CHROM','POS',ids[i]]].merge(refa, how = "left")
+    canids_for_calc=canids[['CHROM','POS',canids.columns[2]]].merge(refa, how = "left")
+
     logging.info("Dataframes merged after: "+str(round(perf_counter(),2))+"s\n")
 
-    logging.info(str(ids[i])+": DFs combined after: "+str(round(perf_counter(),2))+"s\n")
+    logging.info(str(canids.columns[2])+": DFs combined after: "+str(round(perf_counter(),2))+"s\n")
     # Variables
     w_pp_ph = (canids_for_calc.PhastCon.notna())&(canids_for_calc.PhyloP.notna())
     w_pp_ph_sift = (canids_for_calc.PhastCon.notna())&(canids_for_calc.PhyloP.notna())&(canids_for_calc.SIFT_score)
     intergen = (canids_for_calc["Consequence"]=="intergenic_variant")
     gen = (canids_for_calc["Consequence"]!="intergenic_variant")
-    anca = (canids_for_calc[ids[i]] == canids_for_calc["AA"] + "/" + canids_for_calc["AA"])
+    anca = (canids_for_calc[canids.columns[2]] == canids_for_calc["AA"] + "/" + canids_for_calc["AA"])
     
     ## Figure out if the GT is homozygous derived allel or if either PhyloP, sift or derived allele is unknown 
-    der_and_tv = (canids_for_calc[ids[i]] == canids_for_calc["DER"] + "/" + canids_for_calc["DER"])
+    der_and_tv = (canids_for_calc[canids.columns[2]] == canids_for_calc["DER"] + "/" + canids_for_calc["DER"])
 
     # Conservation scores
     ## Across genome
@@ -145,7 +146,7 @@ while i < len(ids):
 
     
     #Make dataframe
-    mutational_load = [[ids[i],phylop_mutational_load,sift_mutational_load,phast_mutational_load,
+    mutational_load = [[canids.columns[2],phylop_mutational_load,sift_mutational_load,phast_mutational_load,
                         phylop_mutational_load_genic, sift_mutational_load_genic,phast_mutational_load_genic,
                         phylop_mutational_load_nongenic,sift_mutational_load_nongenic,phast_mutational_load_nongenic,
                         phylo_score_hom_tv,sift_score_hom_tv,phastcon_score_hom_tv,
@@ -165,7 +166,7 @@ while i < len(ids):
                                                   'Ancestral alleles',"Genic Ancestral alleles",'Non-genic Ancestral alleles','Derived transversion','Genic derived transversions','Non-genic derived transversions'])
     t=pd.concat([t,df])
 
-    logging.info(str(ids[i])+" finished after: "+str(round(perf_counter(),2))+"s\n")
+    logging.info(str(canids.columns[2])+" finished after: "+str(round(perf_counter(),2))+"s\n")
     i=i+1
 
 t.to_csv(args.name+'mutational_load.tsv', sep = "\t", index = False,mode="w")
