@@ -113,7 +113,7 @@ with_AA_tv=len(ref2[(ref2["Type"]=="V")&(ref2.AA.notna())])
 ## Values
 with_PP=ref2.PhyloP.notna().sum()
 with_sift=ref2.SIFT_score.notna().sum()
-with_phastcon=ref2.PhastCon.notna.sum()
+with_phastcon=ref2.PhastCon.notna().sum()
 
 with_all_c=len(ref2[(ref2.PhyloP.notna())&(ref2.SIFT_score.notna())&(ref2.PhastCon.notna())])
 
