@@ -12,6 +12,7 @@ import io
 import subprocess
 import sys
 import time
+import logging
 
 start = time.time()
 
@@ -25,18 +26,18 @@ parser.add_argument("-n","--name", help="Name for produced files.",default="ny")
 
 args = parser.parse_args()
 
-log_file=open(args.name+"_log.txt",'a')
+logging.basicConfig(filename=args.name+"_log.txt", encoding='utf-8', level=logging.DEBUG)
 
 # Input
 ## Get all animals directly from stdout
 #Get all animals directly from stdout
 input_file=subprocess.run(['bcftools','query','-l',args.sample_file],stdout=subprocess.PIPE)
 ids=input_file.stdout.decode().split("\n")
-log_file.write("Canid IDs imported after: "+str(round(time.process_time(),2))+"s\n")
+logging.info("Canid IDs imported after: "+str(round(time.process_time(),2))+"s\n")
 
 ## Import the reference file
 refa = pd.read_csv(args.reference_file, sep='\t',dtype = {'CHROM': object, 'POS': int, 'AA': object, 'DER': object, 'Type': object, 'PhyloP': float, 'SIFT_txt': object, 'SIFT_score': float, 'Consequence': object })
-log_file.write("Reference imported after: "+str(round(time.process_time(),2))+"s\n")
+logging.info("Reference imported after: "+str(round(time.process_time(),2))+"s\n")
 
 
 # Run the pipeline
@@ -51,7 +52,7 @@ while i < len(ids):
     # Combine the 2 dataframes
     canids_for_calc=canids.merge(refa, how = "left")
 
-    log_file.write(str(ids[i])+": DFs combined after: "+str(round(time.process_time(),2))+"s\n")
+    logging.info(str(ids[i])+": DFs combined after: "+str(round(time.process_time(),2))+"s\n")
     # Variables
     w_pp_ph = (canids_for_calc.PhastCon.notna())&(canids_for_calc.PhyloP.notna())
     w_pp_ph_sift = (canids_for_calc.PhastCon.notna())&(canids_for_calc.PhyloP.notna())&(canids_for_calc.SIFT_score)
@@ -140,6 +141,7 @@ while i < len(ids):
         sift_mutational_load_nongenic=0
     else:
         sift_mutational_load_nongenic=sift_score_hom_tv_nongenic/(hom_der_nongenic_s_pp_ph+hom_anc_nongenic_s_pp_ph)
+        logging.warning("SIFT_score≠0 for non-genic")
 
     
     #Make dataframe
@@ -163,9 +165,8 @@ while i < len(ids):
                                                   'Ancestral alleles',"Genic Ancestral alleles",'Non-genic Ancestral alleles','Derived transversion','Genic derived transversions','Non-genic derived transversions'])
     t=pd.concat([t,df])
 
-    log_file.write(str(ids[i])+" finished after: "+str(round(time.process_time(),2))+"s\n")
+    logging.info(str(ids[i])+" finished after: "+str(round(time.process_time(),2))+"s\n")
     i=i+1
 
 t.to_csv(args.name+'mutational_load.tsv', sep = "\t", index = False,mode="w")
-log_file.close()
 
