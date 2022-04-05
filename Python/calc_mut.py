@@ -44,6 +44,7 @@ logging.info("Reference imported after: "+str(round(time.process_time(),2))+"s\n
 i=0
 t=pd.DataFrame([])
 while i < len(ids):
+    logging.info(str(ids[i])+" started after: "+str(round(time.process_time(),2))+"s\n")    
     #Get the animals directly from stdout one at a time to avoid ridiculus memory use
     input_file=subprocess.run(['bcftools','query','-f%CHROM\t%POS\t%REF\t%ALT[\t%TGT]\n',args.sample_file,'-H','-s',ids[i]],stdout=subprocess.PIPE)
     data = io.StringIO(input_file.stdout.decode())
