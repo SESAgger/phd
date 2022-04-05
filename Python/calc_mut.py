@@ -13,6 +13,7 @@ import subprocess
 import sys
 import time
 import logging
+from time import perf_counter
 
 start = time.time()
 
@@ -33,18 +34,18 @@ logging.basicConfig(filename=args.name+"_log.txt", level=logging.DEBUG)
 #Get all animals directly from stdout
 input_file=subprocess.run(['bcftools','query','-l',args.sample_file],stdout=subprocess.PIPE)
 ids=input_file.stdout.decode().split("\n")
-logging.info("Canid IDs imported after: "+str(round(time.process_time(),2))+"s\n")
+logging.info("Canid IDs imported after: "+str(round(perf_counter(),2))+"s\n")
 
 ## Import the reference file
 refa = pd.read_csv(args.reference_file, sep='\t',dtype = {'CHROM': object, 'POS': int, 'AA': object, 'DER': object, 'Type': object, 'PhyloP': float, 'SIFT_txt': object, 'SIFT_score': float, 'Consequence': object })
-logging.info("Reference imported after: "+str(round(time.process_time(),2))+"s\n")
+logging.info("Reference imported after: "+str(round(perf_counter(),2))+"s\n")
 
 
 # Run the pipeline
 i=0
 t=pd.DataFrame([])
 while i < len(ids):
-    logging.info(str(ids[i])+" started after: "+str(round(time.process_time(),2))+"s\n")    
+    logging.info(str(ids[i])+" started after: "+str(round(perf_counter(),2))+"s\n")    
     #Get the animals directly from stdout one at a time to avoid ridiculus memory use
     input_file=subprocess.run(['bcftools','query','-f%CHROM\t%POS\t%REF\t%ALT[\t%TGT]\n',args.sample_file,'-H','-s',ids[i]],stdout=subprocess.PIPE)
     data = io.StringIO(input_file.stdout.decode())
@@ -53,7 +54,7 @@ while i < len(ids):
     # Combine the 2 dataframes
     canids_for_calc=canids.merge(refa, how = "left")
 
-    logging.info(str(ids[i])+": DFs combined after: "+str(round(time.process_time(),2))+"s\n")
+    logging.info(str(ids[i])+": DFs combined after: "+str(round(perf_counter(),2))+"s\n")
     # Variables
     w_pp_ph = (canids_for_calc.PhastCon.notna())&(canids_for_calc.PhyloP.notna())
     w_pp_ph_sift = (canids_for_calc.PhastCon.notna())&(canids_for_calc.PhyloP.notna())&(canids_for_calc.SIFT_score)
@@ -166,7 +167,7 @@ while i < len(ids):
                                                   'Ancestral alleles',"Genic Ancestral alleles",'Non-genic Ancestral alleles','Derived transversion','Genic derived transversions','Non-genic derived transversions'])
     t=pd.concat([t,df])
 
-    logging.info(str(ids[i])+" finished after: "+str(round(time.process_time(),2))+"s\n")
+    logging.info(str(ids[i])+" finished after: "+str(round(perf_counter(),2))+"s\n")
     i=i+1
 
 t.to_csv(args.name+'mutational_load.tsv', sep = "\t", index = False,mode="w")
