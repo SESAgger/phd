@@ -15,9 +15,6 @@ import time
 import logging
 from time import perf_counter
 
-start = time.time()
-
-
 parser=argparse.ArgumentParser(description="Calculates mutational load")
 parser.add_argument("-s","--sample_file",help="vcf file for bcftools")
 parser.add_argument("-r","--reference_file",
@@ -37,11 +34,13 @@ canids.columns=canids.columns.str.lstrip(" # [1234567890]").str.replace(":GT",""
 
 ids=canids.columns[4:]
 
+logging.info("Dataframe imported after: "+str(round(perf_counter(),2))+"s\n")
+
 ## Import the reference file
 refa = pd.read_csv(args.reference_file, sep='\t',dtype = {'CHROM': object, 'POS': int, 'AA': object, 'DER': object, 'Type': object, 'PhyloP': float, 'SIFT_txt': object, 'SIFT_score': float, 'Consequence': object })
 logging.info("Reference imported after: "+str(round(perf_counter(),2))+"s\n")
 
-canids_for_calc=canids.merge(refa, how = "left")
+
 
 # Run the pipeline
 i=0
@@ -50,8 +49,8 @@ while i < len(ids):
     logging.info(str(ids[i])+" started after: "+str(round(perf_counter(),2))+"s\n")    
 
     # Combine the 2 dataframes
-    canid_for_calc=canids_for_calc[['CHROM','POS','AA', 'DER', 'Type', 'PhyloP', 'SIFT_txt', 'SIFT_score',
-       'Consequence', 'PhastCon',ids[i]]]
+    canids_for_calc=canids[['CHROM','POS',ids[i]]].merge(refa, how = "left")
+    logging.info("Dataframes merged after: "+str(round(perf_counter(),2))+"s\n")
 
     logging.info(str(ids[i])+": DFs combined after: "+str(round(perf_counter(),2))+"s\n")
     # Variables
