@@ -106,19 +106,19 @@ print("File is called: "+args.name+"_annotated_AA_TSTV_PhyloP_SIFT.tsv")
 
 # Summary
 ## Basic
-with_AA=ref1.AA.notna().sum()
-tv=len(ref1[ref1["Type"]=="V"])
-with_AA_tv=len(ref1[(ref1["Type"]=="V")&(ref1.AA.notna())])
+with_AA=ref2.AA.notna().sum()
+tv=len(ref2[ref2["Type"]=="V"])
+with_AA_tv=len(ref2[(ref2["Type"]=="V")&(ref2.AA.notna())])
 
 ## Values
-with_PP=ref1.PhyloP.notna().sum()
-with_sift=ref1.SIFT_score.notna().sum()
-with_phastcon=ref1.PhastCon.notna.sum()
+with_PP=ref2.PhyloP.notna().sum()
+with_sift=ref2.SIFT_score.notna().sum()
+with_phastcon=ref2.PhastCon.notna.sum()
 
-with_all_c=len(ref1[(ref1.PhyloP.notna())&(ref1.SIFT_score.notna())&(ref1.PhastCon.notna())])
+with_all_c=len(ref2[(ref2.PhyloP.notna())&(ref2.SIFT_score.notna())&(ref2.PhastCon.notna())])
 
 ## All
-with_AA_tv_PP_sift_phastcon=len(ref1[(ref1.PhyloP.notna())&(ref1.SIFT_score.notna())&(ref1["Type"]=="V")&(ref1.AA.notna())&(ref1.PhastCon.notna())])
+with_AA_tv_PP_sift_phastcon=len(ref2[(ref2.PhyloP.notna())&(ref2.SIFT_score.notna())&(ref2["Type"]=="V")&(ref2.AA.notna())&(ref2.PhastCon.notna())])
 
 ## Write summary
 w=open(args.name+'reference_file_summary.txt','w')
@@ -126,13 +126,13 @@ w.write(
 '#Summary from processing of ' + "test" +'\n'
 '#Can be read as tsv with comment="#" and sep="\t"\n'
 'Name\tNumber\t%of all\n'
-'SNPs where an ancestral allele could be determined:\t' + str(with_AA) + '\t' + str(round(with_AA/len(ref1)*100,decimals=2)) + '%\n'
-'SNPs with a transversion:\t' + str(tv) + '\t' + str(round(tv/len(ref1)*100,decimals=2)) + '%\n'
-'Transversions with known ancestral allele:\t' + str(with_AA_tv)+ '\t' + str(round(with_AA_tv/len(ref1)*100,decimals=2)) + '%\n'
-'SNPs with PhyloP score:\t' + str(with_PP) + '\t' + str(round(with_PP/len(ref1)*100,decimals=2)) + '%\n'
-'SNPs with sift:\t' + str(with_sift) + '\t' + str(round(with_sift/len(ref1)*100,decimals=2)) + '%\n'
-'SNPs with Phastcon score:\t' + str(round(with_phastcon,decimals=2)) + '\t' + str(round(with_phastcon/len(ref1)*100,decimals=2)) + '%\n'
-'SNPs with all conservation scores:\t' +str(round(with_all_c,decimals=2)) + '\t' + str(round(with_all_c/len(ref1)*100,decimals=2)) + '%\n'
-'Transversions with all information:\t' +str(round(with_AA_tv_PP_sift_phastcon,decimals=2)) + '\t' + str(round(with_AA_tv_PP_sift_phastcon/len(ref1)*100,decimals=2)) + '%\n'
+'SNPs where an ancestral allele could be determined:\t' + str(with_AA) + '\t' + str(round(with_AA/len(ref2)*100,decimals=2)) + '%\n'
+'SNPs with a transversion:\t' + str(tv) + '\t' + str(round(tv/len(ref2)*100,decimals=2)) + '%\n'
+'Transversions with known ancestral allele:\t' + str(with_AA_tv)+ '\t' + str(round(with_AA_tv/len(ref2)*100,decimals=2)) + '%\n'
+'SNPs with PhyloP score:\t' + str(with_PP) + '\t' + str(round(with_PP/len(ref2)*100,decimals=2)) + '%\n'
+'SNPs with sift:\t' + str(with_sift) + '\t' + str(round(with_sift/len(ref2)*100,decimals=2)) + '%\n'
+'SNPs with Phastcon score:\t' + str(round(with_phastcon,decimals=2)) + '\t' + str(round(with_phastcon/len(ref2)*100,decimals=2)) + '%\n'
+'SNPs with all conservation scores:\t' +str(round(with_all_c,decimals=2)) + '\t' + str(round(with_all_c/len(ref2)*100,decimals=2)) + '%\n'
+'Transversions with all information:\t' +str(round(with_AA_tv_PP_sift_phastcon,decimals=2)) + '\t' + str(round(with_AA_tv_PP_sift_phastcon/len(ref2)*100,decimals=2)) + '%\n'
 )
 w.close()
