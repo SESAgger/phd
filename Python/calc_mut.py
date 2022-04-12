@@ -54,7 +54,7 @@ while i < ids:
         'Consequence': str , 
         'PhastCon': float})
     canids_for_calc.columns=canids_for_calc.columns.str.lstrip(" # [1234567890]").str.replace(":GT","")
-    logging.info(str(canids_for_calc.columns))
+    logging.info(str(canids_for_calc.dtypes))
     logging.info(str(canids_for_calc.columns[10])+" imported after: "+str(round(perf_counter()-start,2))+"s\n") 
 
     # Variables
