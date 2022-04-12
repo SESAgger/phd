@@ -38,24 +38,19 @@ with open(args.sample_file) as f:
 #refa = pd.read_csv(args.reference_file, sep='\t',dtype = {'CHROM': object, 'POS': int, 'AA': object, 'DER': object, 'Type'#: object, 'PhyloP': float, 'SIFT_txt': object, 'SIFT_score': float, 'Consequence': object })
 #logging.info("Reference imported after: "+str(round(perf_counter()-start,2))+"s\n")
 
-
+logging.info("Ids found")
 
 # Run the pipeline
 i=0
 t=pd.DataFrame([])
 while i < ids:   
-
+    logging.info("Import starting")
     #Get file
-    canids=pd.read_csv(args.sample_file,sep="\t",usecols=[0,1,2,3,4,5,6,7,8,9,i+10])
-    canids.columns=canids.columns.str.lstrip(" # [1234567890]").str.replace(":GT","")
-    logging.info(str(canids.columns[i+10])+" started after: "+str(round(perf_counter()-start,2))+"s\n") 
+    canids_for_calc=pd.read_csv(args.sample_file,sep="\t",usecols=[0,1,2,3,4,5,6,7,8,9,i+10])
+    canids_for_calc.columns=canids_for_calc.columns.str.lstrip(" # [1234567890]").str.replace(":GT","")
+    logging.info(str(canids_for_calc.columns))
+    logging.info(str(canids_for_calc.columns[i+10])+" imported after: "+str(round(perf_counter()-start,2))+"s\n") 
 
-    # Combine the 2 dataframes
-    canids_for_calc=canids[['CHROM','POS',canids.columns[2]]].merge(refa, how = "left")
-
-    logging.info("Dataframes merged after: "+str(round(perf_counter()-start,2))+"s")
-
-    logging.info(str(canids.columns[2])+": DFs combined after: "+str(round(perf_counter()-start,2))+"s")
     # Variables
     w_pp_ph = (canids_for_calc.PhastCon.notna())&(canids_for_calc.PhyloP.notna())
     w_pp_ph_sift = (canids_for_calc.PhastCon.notna())&(canids_for_calc.PhyloP.notna())&(canids_for_calc.SIFT_score)
