@@ -43,12 +43,12 @@ with open(args.sample_file) as f:
 # Run the pipeline
 i=0
 t=pd.DataFrame([])
-while i < ids:
-    logging.info(str(canids.columns[2])+" started after: "+str(round(perf_counter()-start,2))+"s\n")    
+while i < ids:   
 
     #Get file
     canids=pd.read_csv(args.sample_file,sep="\t",usecols=[0,1,2,3,4,5,6,7,8,9,i+10])
     canids.columns=canids.columns.str.lstrip(" # [1234567890]").str.replace(":GT","")
+    logging.info(str(canids.columns[i+10])+" started after: "+str(round(perf_counter()-start,2))+"s\n") 
 
     # Combine the 2 dataframes
     canids_for_calc=canids[['CHROM','POS',canids.columns[2]]].merge(refa, how = "left")
