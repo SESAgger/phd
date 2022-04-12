@@ -34,9 +34,9 @@ logging.info("Start pipeline: "+str(round(perf_counter()-start,2))+"s\n")
 with open(args.sample_file) as f:
     ids = f.readline().count(":GT")
 
-## Import the reference file
-refa = pd.read_csv(args.reference_file, sep='\t',dtype = {'CHROM': object, 'POS': int, 'AA': object, 'DER': object, 'Type': object, 'PhyloP': float, 'SIFT_txt': object, 'SIFT_score': float, 'Consequence': object })
-logging.info("Reference imported after: "+str(round(perf_counter()-start,2))+"s\n")
+### Import the reference file
+#refa = pd.read_csv(args.reference_file, sep='\t',dtype = {'CHROM': object, 'POS': int, 'AA': object, 'DER': object, 'Type'#: object, 'PhyloP': float, 'SIFT_txt': object, 'SIFT_score': float, 'Consequence': object })
+#logging.info("Reference imported after: "+str(round(perf_counter()-start,2))+"s\n")
 
 
 
@@ -44,18 +44,18 @@ logging.info("Reference imported after: "+str(round(perf_counter()-start,2))+"s\
 i=0
 t=pd.DataFrame([])
 while i < ids:
-    #Get file
-    canids=pd.read_csv(args.sample_file,sep="\t",usecols=[0,1,i+2])
-    canids.columns=canids.columns.str.lstrip(" # [1234567890]").str.replace(":GT","")
-
     logging.info(str(canids.columns[2])+" started after: "+str(round(perf_counter()-start,2))+"s\n")    
+
+    #Get file
+    canids=pd.read_csv(args.sample_file,sep="\t",usecols=[0,1,2,3,4,5,6,7,8,9,i+10])
+    canids.columns=canids.columns.str.lstrip(" # [1234567890]").str.replace(":GT","")
 
     # Combine the 2 dataframes
     canids_for_calc=canids[['CHROM','POS',canids.columns[2]]].merge(refa, how = "left")
 
-    logging.info("Dataframes merged after: "+str(round(perf_counter()-start,2))+"s\n")
+    logging.info("Dataframes merged after: "+str(round(perf_counter()-start,2))+"s")
 
-    logging.info(str(canids.columns[2])+": DFs combined after: "+str(round(perf_counter()-start,2))+"s\n")
+    logging.info(str(canids.columns[2])+": DFs combined after: "+str(round(perf_counter()-start,2))+"s")
     # Variables
     w_pp_ph = (canids_for_calc.PhastCon.notna())&(canids_for_calc.PhyloP.notna())
     w_pp_ph_sift = (canids_for_calc.PhastCon.notna())&(canids_for_calc.PhyloP.notna())&(canids_for_calc.SIFT_score)
@@ -64,7 +64,7 @@ while i < ids:
     anca = (canids_for_calc[canids.columns[2]] == canids_for_calc["AA"] + "/" + canids_for_calc["AA"])
     
     ## Figure out if the GT is homozygous derived allel or if either PhyloP, sift or derived allele is unknown 
-    der_and_tv = (canids_for_calc[canids.columns[2]] == canids_for_calc["DER"] + "/" + canids_for_calc["DER"])
+    der_and_tv = (canids_for_calc[canids.columns[2]] == canids_for_calc["DER"] + "/" + canids_for_calc["DER"])&(canids_for_calc["Type"]=="V")
 
     # Conservation scores
     ## Across genome
@@ -92,21 +92,21 @@ while i < ids:
 
     ## Denominators
     ### In total
-    hom_der=len(canids_for_calc[(canids_for_calc["Type"]=="V")&der_and_tv].index)
-    hom_der_genic=len(canids_for_calc[(canids_for_calc["Type"]=="V")&der_and_tv&gen].index)
-    hom_der_nongenic=len(canids_for_calc[(canids_for_calc["Type"]=="V")&(der_and_tv)&intergen].index)
+    hom_der=len(canids_for_calc[der_and_tv].index)
+    hom_der_genic=len(canids_for_calc[der_and_tv&gen].index)
+    hom_der_nongenic=len(canids_for_calc[der_and_tv&intergen].index)
     
     ### With PhyloP, and PhastCon
-    hom_der_pp_ph=len(canids_for_calc[(canids_for_calc["Type"]=="V")&der_and_tv&w_pp_ph].index)
-    hom_der_genic_pp_ph=len(canids_for_calc[(canids_for_calc["Type"]=="V")&der_and_tv&gen&w_pp_ph].index)
-    hom_der_nongenic_pp_ph=len(canids_for_calc[(canids_for_calc["Type"]=="V")&der_and_tv&intergen&w_pp_ph].index)
+    hom_der_pp_ph=len(canids_for_calc[der_and_tv&w_pp_ph].index)
+    hom_der_genic_pp_ph=len(canids_for_calc[der_and_tv&gen&w_pp_ph].index)
+    hom_der_nongenic_pp_ph=len(canids_for_calc[der_and_tv&intergen&w_pp_ph].index)
     
     ### With SIFT, PhyloP, and PhastCon
-    hom_der_s_pp_ph=len(canids_for_calc[(canids_for_calc["Type"]=="V")&der_and_tv&w_pp_ph_sift].index)
-    hom_der_genic_s_pp_ph=len(canids_for_calc[(canids_for_calc["Type"]=="V")&der_and_tv&gen&w_pp_ph_sift].index)
-    hom_der_nongenic_s_pp_ph=len(canids_for_calc[(canids_for_calc["Type"]=="V")&(der_and_tv)&intergen&w_pp_ph_sift].index)
+    hom_der_s_pp_ph=len(canids_for_calc[der_and_tv&w_pp_ph_sift].index)
+    hom_der_genic_s_pp_ph=len(canids_for_calc[der_and_tv&gen&w_pp_ph_sift].index)
+    hom_der_nongenic_s_pp_ph=len(canids_for_calc[der_and_tv&intergen&w_pp_ph_sift].index)
     
-    # Number of locations where gt=the ancestral allele
+    ## Number of locations where gt=the ancestral allele
     ### In total
     hom_anc=len(canids_for_calc[anca].index)
     hom_anc_genic=len(canids_for_calc[anca&gen].index)
