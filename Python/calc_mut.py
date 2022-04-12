@@ -42,8 +42,17 @@ t=pd.DataFrame([])
 while i < ids:   
     logging.info("Import starting")
     #Get file
-    numeric_cols=["POS","PhyloP","SIFT_score","PhastCon"]
-    canids_for_calc=pd.read_csv(args.sample_file,sep="\t",usecols=[0,1,2,3,4,5,6,7,8,9,i+10],dtype = {'CHROM': object, 'POS': int, 'AA': object, 'DER': object, 'Type': object, 'PhyloP': float, 'SIFT_txt': object, 'SIFT_score': float, 'Consequence': object , 'PhastCon': float})
+    canids_for_calc=pd.read_csv(args.sample_file,sep="\t",na_values=".",usecols=[0,1,2,3,4,5,6,7,8,9,i+10],dtype = {
+        'CHROM': str, 
+        'POS': int, 
+        'AA': str, 
+        'DER': str, 
+        'Type': str, 
+        'PhyloP': float, 
+        'SIFT_txt': str, 
+        'SIFT_score': float, 
+        'Consequence': str , 
+        'PhastCon': float})
     canids_for_calc.columns=canids_for_calc.columns.str.lstrip(" # [1234567890]").str.replace(":GT","")
     logging.info(str(canids_for_calc.columns))
     logging.info(str(canids_for_calc.columns[10])+" imported after: "+str(round(perf_counter()-start,2))+"s\n") 
