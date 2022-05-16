@@ -22,7 +22,10 @@ args = parser.parse_args()
 ## Import the gts
 aa = pd.read_csv(args.input_file,sep='\t')
 ## Import the PhyloP scores
-phylop = pd.read_csv(args.phylop, sep = '\t', usecols = [0,2,4], names = ['CHROM','POS','PhyloP'], header = 0)
+phylop = pd.read_csv(args.phylop, sep = '\t', usecols = [0,2,4], names = ['CHROM','POS','PhyloP'], dtype={'POS': int,'PhyloP': float}, fheader = 0)
+
+phylop.loc[phylop["PhyloP"] <= 0, "PhyloP"] = 0
+
 ## Import the Sift scores
 sift = pd.read_csv(args.sift,sep="\t",comment="#",usecols=[1,6,13],names=['Location','Consequence','Extra'])
 sift[['CHROM','POS']]=sift.Location.str.split(":",expand=True)
