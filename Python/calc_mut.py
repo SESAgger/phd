@@ -124,26 +124,26 @@ while i < ids:
     
     ## Results
     ### All
-    phylop_mutational_load=phylo_score_hom_tv/(hom_der_pp_ph+hom_anc_pp_ph)
-    phast_mutational_load=phastcon_score_hom_tv/(hom_der_pp_ph+hom_anc_pp_ph)
+    phylop_mutational_load=phylo_score_hom_tv/(hom_der_pp_ph)
+    phast_mutational_load=phastcon_score_hom_tv/(hom_der_pp_ph)
     
-    sift_mutational_load=sift_score_hom_tv/(hom_der_s_pp_ph+hom_anc_s_pp_ph)
+    sift_mutational_load=sift_score_hom_tv/(hom_der_s_pp_ph)
 
     
     ### Genic
-    phylop_mutational_load_genic=phylo_score_hom_tv_genic/(hom_der_genic_pp_ph+hom_anc_genic_pp_ph)
-    phast_mutational_load_genic=phastcon_score_hom_tv_genic/(hom_der_genic_pp_ph+hom_anc_genic_pp_ph)
+    phylop_mutational_load_genic=phylo_score_hom_tv_genic/(hom_der_genic_pp_ph)
+    phast_mutational_load_genic=phastcon_score_hom_tv_genic/(hom_der_genic_pp_ph)
 
-    sift_mutational_load_genic=sift_score_hom_tv_genic/(hom_der_nongenic_s_pp_ph+hom_anc_genic_s_pp_ph)
+    sift_mutational_load_genic=sift_score_hom_tv_genic/(hom_der_nongenic_s_pp_ph)
 
     
     ### Non-genic
-    phylop_mutational_load_nongenic=phylo_score_hom_tv_nongenic/(hom_der_nongenic_pp_ph+hom_anc_nongenic_pp_ph)
-    phast_mutational_load_nongenic=phastcon_score_hom_tv_nongenic/(hom_der_nongenic_pp_ph+hom_anc_nongenic_pp_ph)
-    if(hom_der_nongenic_s_pp_ph==0&hom_anc_nongenic_s_pp_ph==0):
+    phylop_mutational_load_nongenic=phylo_score_hom_tv_nongenic/(hom_der_nongenic_pp_ph)
+    phast_mutational_load_nongenic=phastcon_score_hom_tv_nongenic/(hom_der_nongenic_pp_ph)
+    if(hom_der_nongenic_s_pp_ph==0):
         sift_mutational_load_nongenic=0
     else:
-        sift_mutational_load_nongenic=sift_score_hom_tv_nongenic/(hom_der_nongenic_s_pp_ph+hom_anc_nongenic_s_pp_ph)
+        sift_mutational_load_nongenic=sift_score_hom_tv_nongenic/(hom_der_nongenic_s_pp_ph)
         logging.warning("SIFT_score≠0 for non-genic")
 
     
