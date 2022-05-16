@@ -22,7 +22,7 @@ args = parser.parse_args()
 ## Import the gts
 aa = pd.read_csv(args.input_file,sep='\t')
 ## Import the PhyloP scores
-phylop = pd.read_csv(args.phylop, sep = '\t', usecols = [0,2,4], names = ['CHROM','POS','PhyloP'], dtype={'POS': int,'PhyloP': float}, fheader = 0)
+phylop = pd.read_csv(args.phylop, sep = '\t', usecols = [0,2,4], names = ['CHROM','POS','PhyloP'], dtype={'POS': int,'PhyloP': float}, header = 0)
 
 phylop.loc[phylop["PhyloP"] <= 0, "PhyloP"] = 0
 
